@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>IdevsWork.Foundation.Autofac</PackageId>
+    <Title>IdevsWork Foundation Autofac</Title>
+    <Description>Autofac integration for IdevsWork Foundation with automatic registration of handlers and behaviors</Description>
+    <PackageTags>autofac;dependency-injection;cqrs;mediator;ioc;container</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" />
+    <PackageReference Include="System.Text.Json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../IdevsWork.Foundation.Cqrs/IdevsWork.Foundation.Cqrs.csproj" />
+    <ProjectReference Include="../IdevsWork.Foundation.Mediator/IdevsWork.Foundation.Mediator.csproj" />
+    <ProjectReference Include="../IdevsWork.Foundation.Services/IdevsWork.Foundation.Services.csproj" />
+    <ProjectReference Include="../IdevsWork.Foundation.Serilog/IdevsWork.Foundation.Serilog.csproj" />
+  </ItemGroup>
+</Project>

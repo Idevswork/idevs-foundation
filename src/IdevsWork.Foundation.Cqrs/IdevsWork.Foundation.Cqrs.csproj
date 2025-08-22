@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>IdevsWork.Foundation.Cqrs</PackageId>
+    <Title>IdevsWork Foundation CQRS</Title>
+    <Description>CQRS (Command Query Responsibility Segregation) abstractions and base classes for IdevsWork Foundation</Description>
+    <PackageTags>cqrs;command;query;handler;mediator;ddd;domain-driven-design</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../IdevsWork.Foundation.Abstractions/IdevsWork.Foundation.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+
+</Project>

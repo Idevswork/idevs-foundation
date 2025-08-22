@@ -1,0 +1,77 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>IdevsWork.Foundation</PackageId>
+    <Title>IdevsWork Foundation</Title>
+    <Description>Complete foundation framework for building modern .NET applications with CQRS, Entity Framework, Mediator patterns, and more</Description>
+    <PackageTags>foundation;cqrs;entityframework;mediator;services;serilog;autofac;abstractions</PackageTags>
+    
+    <!-- Consolidated package configuration -->
+    <IncludeBuildOutput>true</IncludeBuildOutput>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <!-- Include all Foundation components -->
+  <ItemGroup>
+    <ProjectReference Include="../IdevsWork.Foundation.Abstractions/IdevsWork.Foundation.Abstractions.csproj" PrivateAssets="all" />
+    <ProjectReference Include="../IdevsWork.Foundation.Services/IdevsWork.Foundation.Services.csproj" PrivateAssets="all" />
+    <ProjectReference Include="../IdevsWork.Foundation.Mediator/IdevsWork.Foundation.Mediator.csproj" PrivateAssets="all" />
+    <ProjectReference Include="../IdevsWork.Foundation.Cqrs/IdevsWork.Foundation.Cqrs.csproj" PrivateAssets="all" />
+    <ProjectReference Include="../IdevsWork.Foundation.EntityFramework/IdevsWork.Foundation.EntityFramework.csproj" PrivateAssets="all" />
+    <ProjectReference Include="../IdevsWork.Foundation.Serilog/IdevsWork.Foundation.Serilog.csproj" PrivateAssets="all" />
+    <ProjectReference Include="../IdevsWork.Foundation.Autofac/IdevsWork.Foundation.Autofac.csproj" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- Include external NuGet package dependencies -->
+  <ItemGroup>
+    <!-- Microsoft Core Packages -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
+    
+    <!-- Entity Framework Core -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    
+    <!-- Autofac -->
+    <PackageReference Include="Autofac" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" />
+    
+    <!-- Serilog -->
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.Extensions.Logging" />
+    <PackageReference Include="Serilog.Extensions.Hosting" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+    <PackageReference Include="Serilog.Sinks.File" />
+    <PackageReference Include="Serilog.Settings.Configuration" />
+    <PackageReference Include="Serilog.Enrichers.Environment" />
+    <PackageReference Include="Serilog.Enrichers.Process" />
+    <PackageReference Include="Serilog.Enrichers.Thread" />
+    
+    <!-- System Packages -->
+    <PackageReference Include="System.Text.Json" />
+  </ItemGroup>
+
+  <!-- Add documentation to package -->
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <!-- Custom target to include all project reference assemblies in the package -->
+  <Target Name="IncludeReferencedProjectsInPack" BeforeTargets="_GetPackageFiles">
+    <ItemGroup>
+      <None Include="$(OutputPath)IdevsWork.Foundation.Abstractions.dll" Pack="true" PackagePath="lib/net8.0/" />
+      <None Include="$(OutputPath)IdevsWork.Foundation.Services.dll" Pack="true" PackagePath="lib/net8.0/" />
+      <None Include="$(OutputPath)IdevsWork.Foundation.Mediator.dll" Pack="true" PackagePath="lib/net8.0/" />
+      <None Include="$(OutputPath)IdevsWork.Foundation.Cqrs.dll" Pack="true" PackagePath="lib/net8.0/" />
+      <None Include="$(OutputPath)IdevsWork.Foundation.EntityFramework.dll" Pack="true" PackagePath="lib/net8.0/" />
+      <None Include="$(OutputPath)IdevsWork.Foundation.Serilog.dll" Pack="true" PackagePath="lib/net8.0/" />
+      <None Include="$(OutputPath)IdevsWork.Foundation.Autofac.dll" Pack="true" PackagePath="lib/net8.0/" />
+    </ItemGroup>
+  </Target>
+
+</Project>
