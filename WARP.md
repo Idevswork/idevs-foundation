@@ -46,6 +46,23 @@ dotnet build --configuration Debug
 dotnet restore
 ```
 
+### CI/CD Commands
+
+```bash
+# Check workflow status
+gh workflow list
+gh workflow view ci-cd.yml
+
+# Trigger manual workflow run (if configured)
+gh workflow run ci-cd.yml
+
+# View recent workflow runs
+gh run list --workflow=ci-cd.yml
+
+# Check latest run status
+gh run view --log
+```
+
 ### Testing Commands
 
 ```bash
@@ -203,6 +220,62 @@ The framework is designed for extensibility:
 - Custom CQRS command/query implementations
 - Custom repository implementations with specialized query methods
 - Custom mapper implementations for complex entity-DTO relationships
+
+## CI/CD Pipeline
+
+The repository includes a comprehensive GitHub Actions CI/CD pipeline:
+
+### Workflow Overview
+
+1. **Build and Test** - Runs on all pushes and pull requests
+   - Builds solution with .NET 8.0
+   - Runs unit tests with code coverage
+   - Uploads test results and coverage reports
+
+2. **Package Creation** - Automated semantic versioning and package generation
+   - Uses GitVersion for automatic version calculation
+   - Builds consolidated package for all branches
+   - Builds individual packages for main branch and releases
+
+3. **Publishing Strategy**:
+   - **Preview** (develop branch) → GitHub Packages with alpha versions
+   - **Release** (main branch) → NuGet.org and GitHub Packages
+   - **GitHub Releases** → Automatic package attachment
+
+### Branch Strategy (GitFlow)
+
+- `main` - Production releases (publishes to NuGet.org)
+- `develop` - Development integration (publishes preview packages)
+- `feature/*` - Feature development branches
+- `release/*` - Release preparation branches
+- `hotfix/*` - Emergency fixes
+
+### Semantic Versioning
+
+Versions are automatically calculated based on branch and commit messages:
+
+```bash
+# Commit message examples for version control
+git commit -m "feat: new feature +semver: minor"
+git commit -m "fix: bug fix +semver: patch"
+git commit -m "feat!: breaking change +semver: major"
+git commit -m "docs: update docs +semver: none"
+```
+
+### Security and Quality
+
+- **CodeQL Analysis** - Weekly security scans
+- **Dependabot** - Automated dependency updates
+- **Code Coverage** - Integrated with Codecov
+- **Environment Protection** - Production deployments require approval
+
+### Setup Requirements
+
+To enable full CI/CD functionality, configure these repository secrets:
+- `NUGET_API_KEY` - For publishing to NuGet.org
+- `CODECOV_TOKEN` - For code coverage reports (optional)
+
+See `.github/README.md` for detailed setup instructions.
 
 <citations>
 <document>
