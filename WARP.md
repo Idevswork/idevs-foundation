@@ -123,7 +123,7 @@ Use `services.AddFoundationLoggingWithStaticAccess()` for full logging capabilit
 
 - Unit tests use xUnit framework
 - Mock `ILogManager` and repository interfaces for service testing
-- Test projects target .NET 9.0 for latest testing features
+- Test projects target .NET 8.0 to match the solution framework
 - Use in-memory databases for integration testing Entity Framework repositories
 
 ## Project Structure Understanding
