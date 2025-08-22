@@ -1,0 +1,61 @@
+# See https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
+# and https://github.com/github/gitignore/blob/main/Global/macOS.gitignore
+
+# OS / Editors
+.DS_Store
+.idea/
+.vscode/
+*.code-workspace
+
+# VS / Rider / Build artifacts
+.vs/
+**/bin/
+**/obj/
+**/Debug/
+**/Release/
+**/*.user
+**/*.suo
+
+# NuGet
+*.nupkg
+*.snupkg
+# Keep local cache out of repo
+.nuget/
+# Restore artifacts
+packages/
+
+# Logs / Coverage / Test Results
+*.log
+logs/
+TestResult*/
+TestResults/
+coverage/
+.coverage
+*.coverage*
+
+# Generated artifacts
+artifacts/
+
+# Local env / secrets (do not commit real secrets)
+.env
+.env.*
+*.secret*
+
+# Resharper / Rider
+.ReSharper*/
+*_ReSharper*/
+
+# MacOS metadata
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+
+# Temporary files
+*.tmp
+*.temp
+~$*
+Thumbs.db
+
