@@ -20,7 +20,7 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0 # Required for GitVersion
     
@@ -47,7 +47,7 @@ jobs:
       run: dotnet test Idevs.Foundation.sln --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
     
     - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         directory: ./coverage
         fail_ci_if_error: false
@@ -79,7 +79,7 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
     
@@ -89,13 +89,13 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
     
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v1
+      uses: gittools/actions/gitversion/setup@v4
       with:
         versionSpec: '5.x'
     
     - name: Determine Version
       id: version
-      uses: gittools/actions/gitversion/execute@v1
+      uses: gittools/actions/gitversion/execute@v4
       with:
         useConfigFile: true
     
@@ -141,7 +141,7 @@ jobs:
     
     steps:
     - name: Download package artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: nuget-packages
         path: artifacts/
@@ -167,7 +167,7 @@ jobs:
     
     steps:
     - name: Download package artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: nuget-packages
         path: artifacts/
@@ -200,7 +200,7 @@ jobs:
     
     steps:
     - name: Download package artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: nuget-packages
         path: artifacts/
