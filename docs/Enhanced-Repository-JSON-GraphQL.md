@@ -1,13 +1,14 @@
-# Enhanced Repository with JSON Query and GraphQL Support
+# Repository with JSON Query and GraphQL Support
 
-The Idevs.Foundation library now includes enhanced repository capabilities with comprehensive JSON query support and GraphQL integration across major database providers.
+The Idevs.Foundation library includes comprehensive JSON query support and GraphQL integration across major database providers. **GraphQL support is now available in all repositories** that inherit from `RepositoryBase`, while enhanced JSON optimizations are available through `EnhancedRepositoryBase`.
 
 ## Overview
 
-The enhanced repository system provides:
+The repository system provides:
 
+- **GraphQL query support** (available in all repositories via `RepositoryBase`)
 - **Database-agnostic JSON querying** with automatic provider detection
-- **GraphQL query support** with automatic translation to database-specific operations
+- **Enhanced JSON optimizations** for specific database providers via `EnhancedRepositoryBase`
 - **Optimized implementations** for PostgreSQL, SQL Server, MySQL, and SQLite
 - **Backward compatibility** with existing repository implementations
 - **Advanced JSON path operations** and aggregation support
@@ -19,14 +20,32 @@ The enhanced repository system provides:
 | PostgreSQL | ✅ JSONB operators (`#>>`, `@>`) | ✅ Full support | ✅ Full-text search, aggregation |
 | SQL Server | ✅ JSON_VALUE, JSON_QUERY | ✅ Full support | ✅ Full-text search, aggregation |
 | MySQL | ✅ JSON_EXTRACT, JSON_SEARCH | ✅ Full support | ✅ JSON path queries, aggregation |
-| SQLite | ✅ JSON_EXTRACT functions | ✅ Basic support | ✅ JSON path queries |
-| In-Memory | ⚠️ Fallback to string contains | ⚠️ Limited support | ❌ Testing only |
+| SQLite | ✅ JSON_EXTRACT functions | ✅ Full support | ✅ JSON path queries |
+| In-Memory | ⚠️ Fallback to string contains | ✅ Basic support | ❌ Testing only |
 
 ## Getting Started
 
-### 1. Basic Usage
+### 1. Basic Repository with GraphQL Support
 
-Inherit from `EnhancedRepositoryBase` instead of `RepositoryBase`:
+**All repositories now have GraphQL support by default** when inheriting from `RepositoryBase`:
+
+```csharp
+public class ProductRepository : RepositoryBase<Product, int>, IProductRepository
+{
+    public ProductRepository(DbContext dbContext, ILogger<RepositoryBase<Product, int>> logger)
+        : base(dbContext, logger)
+    {
+    }
+    
+    // GraphQL methods are now available automatically:
+    // - ExecuteGraphQlQueryAsync()
+    // - ExecuteGraphQlWithJsonQueryAsync()
+}
+```
+
+### 2. Enhanced Repository for Optimized JSON Queries
+
+For **database-specific JSON optimizations**, inherit from `EnhancedRepositoryBase`:
 
 ```csharp
 public class ProductRepository : EnhancedRepositoryBase<Product, int>, IProductRepository
@@ -35,10 +54,15 @@ public class ProductRepository : EnhancedRepositoryBase<Product, int>, IProductR
         : base(dbContext, logger)
     {
     }
+    
+    // Includes both GraphQL support AND optimized JSON operations:
+    // - Automatic database provider detection
+    // - Provider-specific JSON query optimizations
+    // - Advanced JSON path operations
 }
 ```
 
-### 2. Entity Setup
+### 3. Entity Setup
 
 Ensure your entities have JSON properties:
 
@@ -51,7 +75,7 @@ public class Product : SoftDeletableEntity<int>
 }
 ```
 
-### 3. DbContext Configuration
+### 4. DbContext Configuration
 
 Configure JSON columns properly in your DbContext:
 
@@ -79,12 +103,77 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 }
 ```
 
-## JSON Query Examples
+## GraphQL Integration (Available in All Repositories)
+
+GraphQL support is now built into the base `RepositoryBase` class and available to all repositories:
+
+### Simple GraphQL Queries
+
+```csharp
+// Basic GraphQL query - works with any repository
+var query = @"
+{
+  products(where: { name: { contains: ""laptop"" } }) {
+    id
+    name
+    price
+  }
+}";
+
+var results = await repository.ExecuteGraphQlQueryAsync(query);
+```
+
+### GraphQL with Variables
+
+```csharp
+var query = @"
+query GetProductsByCategory($category: String!) {
+  products(where: { 
+    name: { contains: $category }
+  }) {
+    id
+    name
+    price
+  }
+}";
+
+var variables = new Dictionary<string, object>
+{
+    ["category"] = "electronics"
+};
+
+var results = await repository.ExecuteGraphQlQueryAsync(query, variables);
+```
+
+### Supported GraphQL Operators
+
+The base GraphQL implementation supports:
+
+- `eq` - Equality comparison
+- `contains` - String contains
+- `startsWith` - String starts with
+- `endsWith` - String ends with
+
+### GraphQL Field Mapping
+
+GraphQL fields are automatically mapped to entity properties:
+
+```csharp
+// GraphQL field -> Entity Property
+"name" -> "Name"
+"price" -> "Price"
+"category" -> "Category"
+"id" -> "Id"
+"isActive" -> "IsActive"
+// Other fields: First letter capitalized
+```
+
+## JSON Query Examples (Enhanced Repository Only)
 
 ### Basic JSON Querying
 
 ```csharp
-// Find products with specific metadata
+// Find products with specific metadata (requires EnhancedRepositoryBase)
 var products = await repository.GetByCriteriaWithJsonQueryAsync(
     p => p.Metadata,
     "category",
@@ -102,7 +191,7 @@ var product = await repository.FirstOrDefaultWithJsonQueryAsync(
 ### Advanced JSON Path Queries
 
 ```csharp
-// Query nested JSON paths
+// Query nested JSON paths (requires EnhancedRepositoryBase)
 var premiumProducts = await repository.ExecuteJsonPathQueryAsync(
     p => p.Metadata,
     "pricing.tier",
@@ -116,309 +205,70 @@ var productsWithRatings = await repository.ExecuteJsonPathQueryAsync(
     "reviews.rating",
     "exists"
 );
-
-// Complex nested queries
-var technologyBooks = await repository.ExecuteJsonPathQueryAsync(
-    p => p.Metadata,
-    "categories[0].name",
-    "contains",
-    "Technology"
-);
 ```
 
-## GraphQL Integration
+## Architecture Changes
 
-### Simple GraphQL Queries
+### Version 1.1.0+ Changes
 
-```csharp
-// Basic GraphQL query
-var query = @"
-{
-  products(where: { name: { contains: ""laptop"" } }) {
-    id
-    name
-    price
-  }
-}";
+- **GraphQL support moved to `RepositoryBase`**: All repositories now have GraphQL capabilities
+- **Enhanced JSON optimizations remain in `EnhancedRepositoryBase`**: Database-specific JSON optimizations still require the enhanced repository
+- **Backward compatibility maintained**: Existing code continues to work without changes
+- **Simplified architecture**: GraphQL logic is now centralized in the base class
 
-var results = await repository.ExecuteGraphQLQueryAsync(query);
-```
+### Migration Guide
 
-### Advanced GraphQL with Variables
+**No code changes required** for existing implementations:
 
-```csharp
-var query = @"
-query GetProductsByCategory($category: String!) {
-  products(where: { 
-    metadata: { 
-      json(path: ""category"", value: $category) 
-    } 
-  }) {
-    id
-    name
-    metadata
-  }
-}";
+- Repositories inheriting from `RepositoryBase` now automatically get GraphQL support
+- Repositories inheriting from `EnhancedRepositoryBase` continue to work as before
+- All existing JSON query methods remain available in `EnhancedRepositoryBase`
 
-var variables = new Dictionary<string, object>
-{
-    ["category"] = "electronics"
-};
+### When to Use Which Repository
 
-var results = await repository.ExecuteGraphQLQueryAsync(query, variables);
-```
+| Repository Type | Use When | Features |
+|-----------------|----------|----------|
+| `RepositoryBase` | Basic CRUD + GraphQL | Standard EF operations + GraphQL queries |
+| `EnhancedRepositoryBase` | Complex JSON queries + GraphQL | All base features + optimized JSON operations |
 
-### GraphQL with JSON Filtering
-
-```csharp
-var query = @"
-{
-  products(where: { 
-    price: { gt: 100 },
-    metadata: { 
-      json(path: ""featured"", value: ""true"")
-    }
-  }) {
-    id
-    name
-    price
-    metadata
-  }
-}";
-
-var results = await repository.ExecuteGraphQLWithJsonQueryAsync(
-    query,
-    p => p.Metadata
-);
-```
-
-## Database-Specific Optimizations
+## Database-Specific Optimizations (Enhanced Repository)
 
 The enhanced repository automatically detects your database provider and uses optimized query strategies:
 
 ### PostgreSQL Optimizations
 
-```csharp
-// Uses JSONB containment operators for efficient querying
-// Automatically leverages GIN indexes on JSONB columns
-// Supports full-text search within JSON content
-
-// Example: Efficient JSONB query
-// Translates to: WHERE metadata @> '{\"category\": \"electronics\"}'
-var products = await repository.GetByCriteriaWithJsonQueryAsync(
-    p => p.Metadata,
-    "category", 
-    "electronics"
-);
-```
+- Uses JSONB operators for efficient JSON queries
+- Leverages PostgreSQL's native JSON indexing
+- Supports complex JSON path expressions
 
 ### SQL Server Optimizations
 
-```csharp
-// Uses JSON_VALUE and JSON_QUERY functions
-// Supports computed columns for indexing JSON paths
-// Integrates with full-text search capabilities
-
-// Example: Optimized JSON_VALUE query
-// Translates to: WHERE JSON_VALUE(metadata, '$.category') = 'electronics'
-```
+- Uses JSON_VALUE and JSON_QUERY functions
+- Optimized for SQL Server's JSON implementation
+- Supports full-text search on JSON content
 
 ### MySQL Optimizations
 
-```csharp
-// Uses JSON_EXTRACT and JSON_CONTAINS functions
-// Supports generated columns for JSON path indexing
-// Leverages MySQL's JSON data type features
-
-// Example: Efficient JSON_EXTRACT query
-// Translates to: WHERE JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.category')) = 'electronics'
-```
+- Uses JSON_EXTRACT and JSON_SEARCH functions
+- Leverages MySQL's native JSON type
+- Supports JSON path queries with wildcards
 
 ### SQLite Optimizations
 
-```csharp
-// Uses SQLite's JSON1 extension functions
-// Supports JSON_EXTRACT for path-based queries
-// Falls back to string operations when needed
-
-// Example: JSON_EXTRACT query
-// Translates to: WHERE JSON_EXTRACT(metadata, '$.category') = 'electronics'
-```
+- Uses JSON_EXTRACT functions
+- Fallback implementation for lightweight scenarios
+- Basic JSON path support
 
 ## Performance Considerations
 
-### Indexing Strategies
+- **Base GraphQL**: Simple parsing and filtering, suitable for basic queries
+- **Enhanced JSON**: Database-optimized queries for complex JSON operations
+- **Provider Detection**: Automatic optimization based on detected database provider
+- **Fallback Support**: Graceful degradation for unsupported scenarios
 
-#### PostgreSQL
-```sql
--- Create GIN index for efficient JSONB queries
-CREATE INDEX idx_product_metadata_gin ON products USING GIN (metadata);
+## Future Enhancements
 
--- Create partial index for specific JSON keys
-CREATE INDEX idx_product_category ON products USING BTREE ((metadata->>'category'));
-```
-
-#### SQL Server
-```sql
--- Create computed column and index
-ALTER TABLE products 
-ADD category AS JSON_VALUE(metadata, '$.category');
-
-CREATE INDEX idx_product_category ON products (category);
-```
-
-#### MySQL
-```sql
--- Create generated column and index
-ALTER TABLE products 
-ADD COLUMN category VARCHAR(100) AS (JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.category'))) STORED;
-
-CREATE INDEX idx_product_category ON products (category);
-```
-
-### Best Practices
-
-1. **Use appropriate indexes** for frequently queried JSON paths
-2. **Consider denormalization** for critical query paths
-3. **Profile queries** specific to your database provider
-4. **Use computed/generated columns** for complex JSON expressions
-5. **Implement caching** for expensive JSON aggregations
-
-## Error Handling
-
-The enhanced repository provides detailed error information:
-
-```csharp
-try 
-{
-    var results = await repository.ExecuteJsonPathQueryAsync(
-        p => p.Metadata,
-        "invalid.path",
-        "equals",
-        "value"
-    );
-}
-catch (NotSupportedException ex)
-{
-    // Provides specific guidance for unsupported operations
-    Console.WriteLine(ex.Message);
-    // Includes database provider information and implementation suggestions
-}
-```
-
-## Testing with In-Memory Database
-
-For unit testing, the enhanced repository gracefully falls back to string-based operations:
-
-```csharp
-[Test]
-public async Task Should_Query_JSON_With_InMemory_Database()
-{
-    // Uses Entity Framework In-Memory provider
-    var options = new DbContextOptionsBuilder<TestDbContext>()
-        .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-        .Options;
-        
-    using var context = new TestDbContext(options);
-    var repository = new ProductRepository(context, logger);
-    
-    // JSON queries work with simplified string matching
-    var results = await repository.GetByCriteriaWithJsonQueryAsync(
-        p => p.Metadata,
-        "category",
-        "electronics"
-    );
-    
-    Assert.NotNull(results);
-}
-```
-
-## Migration Guide
-
-### From Basic Repository
-
-1. **Change inheritance**: Replace `RepositoryBase` with `EnhancedRepositoryBase`
-2. **Update DbContext**: Add proper JSON column configurations
-3. **Add indexes**: Create appropriate indexes for your JSON query patterns
-4. **Update tests**: Ensure tests account for database-specific behaviors
-
-### Backward Compatibility
-
-- All existing repository methods continue to work unchanged
-- JSON query methods gracefully fall back to the original implementations if not overridden
-- GraphQL methods throw informative exceptions with implementation guidance
-
-## Advanced Features
-
-### Aggregation Support
-
-```csharp
-// Count products in a category (from JSON)
-var count = await repository.AggregateJsonFieldAsync<int>(
-    p => p.Metadata,
-    "category",
-    "COUNT"
-);
-
-// Average rating from JSON metadata
-var avgRating = await repository.AggregateJsonFieldAsync<decimal>(
-    p => p.Metadata,
-    "reviews.rating",
-    "AVG"
-);
-```
-
-### Full-Text Search in JSON
-
-```csharp
-// Search across all JSON content
-var searchResults = await repository.FullTextSearchInJsonAsync(
-    p => p.Metadata,
-    "wireless technology"
-);
-
-// Search specific JSON fields
-var specificSearch = await repository.FullTextSearchInJsonAsync(
-    p => p.Metadata,
-    "bluetooth",
-    new[] { "features", "description" }
-);
-```
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Provider not detected**: Ensure your connection string matches expected provider patterns
-2. **JSON functions not available**: Verify database version supports JSON operations
-3. **Performance issues**: Check indexing strategy for your JSON query patterns
-4. **Type conversion errors**: Ensure JSON values match expected .NET types
-
-### Debugging
-
-Enable detailed logging to see generated SQL queries:
-
-```csharp
-services.AddDbContext<MyDbContext>(options =>
-{
-    options.UseNpgsql(connectionString)
-           .EnableSensitiveDataLogging()
-           .LogTo(Console.WriteLine, LogLevel.Information);
-});
-```
-
-## Contributing
-
-To add support for additional database providers:
-
-1. Implement database-specific JSON query methods
-2. Add provider detection logic
-3. Create comprehensive tests
-4. Update documentation with provider-specific examples
-
-## See Also
-
-- [Repository Pattern Documentation](./Repository-Pattern.md)
-- [Entity Framework Configuration](./EntityFramework-Setup.md)
-- [GraphQL Best Practices](./GraphQL-Integration.md)
-- [Performance Optimization](./Performance-Tuning.md)
+- Advanced GraphQL schema support
+- Custom GraphQL resolvers
+- Enhanced JSON aggregation functions
+- Additional database provider support

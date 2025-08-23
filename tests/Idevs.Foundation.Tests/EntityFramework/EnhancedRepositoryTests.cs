@@ -3,6 +3,7 @@ using Idevs.Foundation.EntityFramework.Repositories;
 using Idevs.Foundation.Tests.Utilities;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using Xunit;
 
 namespace Idevs.Foundation.Tests.EntityFramework;
 
@@ -94,7 +95,7 @@ public class EnhancedRepositoryTests
         }
         """;
 
-        var results = await repository.ExecuteGraphQLQueryAsync(graphqlQuery);
+        var results = await repository.ExecuteGraphQlQueryAsync(graphqlQuery);
 
         // Assert
         Assert.NotNull(results);

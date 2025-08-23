@@ -4,23 +4,24 @@ using Idevs.Foundation.EntityFramework.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Xunit;
 
 namespace Idevs.Foundation.Tests.Utilities;
 
-/// <summary>
-/// Test entities for comprehensive testing scenarios
-/// </summary>
-public class TestProduct : SoftDeletableEntity<int>
-{
-    public string Name { get; set; } = string.Empty;
-    public decimal Price { get; set; }
-    public string Category { get; set; } = string.Empty;
-    public JsonObject? Metadata { get; set; }
-    public bool IsActive { get; set; } = true;
-    
-    // Navigation properties for relationship testing
-    public List<TestOrder> Orders { get; set; } = new();
-}
+// /// <summary>
+// /// Test entities for comprehensive testing scenarios
+// /// </summary>
+// public class TestProduct : SoftDeletableEntity<int>
+// {
+//     public string Name { get; set; } = string.Empty;
+//     public decimal Price { get; set; }
+//     public string Category { get; set; } = string.Empty;
+//     public JsonObject? Metadata { get; set; }
+//     public bool IsActive { get; set; } = true;
+//
+//     // Navigation properties for relationship testing
+//     public List<TestOrder> Orders { get; set; } = new();
+// }
 
 public class TestOrder : AuditableEntity<Guid>
 {
@@ -41,244 +42,244 @@ public enum OrderStatus
     Cancelled
 }
 
-/// <summary>
-/// Test DbContext with all necessary configurations
-/// </summary>
-public class TestDbContext : DbContext
-{
-    public TestDbContext(DbContextOptions<TestDbContext> options) : base(options) { }
+// /// <summary>
+// /// Test DbContext with all necessary configurations
+// /// </summary>
+// public class TestDbContext : DbContext
+// {
+//     public TestDbContext(DbContextOptions<TestDbContext> options) : base(options) { }
+//
+//     public DbSet<TestProduct> Products { get; set; }
+//     public DbSet<TestOrder> Orders { get; set; }
+//
+//     private static string? JsonObjectToString(JsonObject? jsonObject)
+//     {
+//         return jsonObject?.ToJsonString();
+//     }
+//
+//     private static JsonObject? StringToJsonObject(string? jsonString)
+//     {
+//         if (string.IsNullOrEmpty(jsonString))
+//             return null;
+//
+//         try
+//         {
+//             var node = JsonNode.Parse(jsonString);
+//             return node?.AsObject();
+//         }
+//         catch
+//         {
+//             return null;
+//         }
+//     }
+//
+//     protected override void OnModelCreating(ModelBuilder modelBuilder)
+//     {
+//         base.OnModelCreating(modelBuilder);
+//
+//         // Product configuration
+//         modelBuilder.Entity<TestProduct>(entity =>
+//         {
+//             entity.HasKey(e => e.Id);
+//
+//             entity.Property(e => e.Name)
+//                   .IsRequired()
+//                   .HasMaxLength(200);
+//
+//             entity.Property(e => e.Category)
+//                   .IsRequired()
+//                   .HasMaxLength(100);
+//
+//             entity.Property(e => e.Price)
+//                   .HasPrecision(18, 2);
+//
+//             // JSON column configuration with value converter for InMemory compatibility
+//             entity.Property(e => e.Metadata)
+//                   .IsRequired(false)
+//                   .HasConversion(
+//                       v => JsonObjectToString(v),
+//                       v => StringToJsonObject(v));
+//
+//             // Soft delete index
+//             entity.HasIndex(e => e.IsDeleted)
+//                   .HasDatabaseName("IX_Products_IsDeleted");
+//         });
+//
+//         // Order configuration
+//         modelBuilder.Entity<TestOrder>(entity =>
+//         {
+//             entity.HasKey(e => e.Id);
+//
+//             entity.Property(e => e.CustomerEmail)
+//                   .IsRequired()
+//                   .HasMaxLength(256);
+//
+//             entity.Property(e => e.TotalAmount)
+//                   .HasPrecision(18, 2);
+//
+//             entity.Property(e => e.Status)
+//                   .HasConversion<string>();
+//
+//             // Foreign key relationship
+//             entity.HasOne(e => e.Product)
+//                   .WithMany(p => p.Orders)
+//                   .HasForeignKey(e => e.ProductId)
+//                   .OnDelete(DeleteBehavior.Cascade);
+//         });
+//
+//         // Seed test data
+//         modelBuilder.Entity<TestProduct>().HasData(
+//             new TestProduct
+//             {
+//                 Id = 1,
+//                 Name = "Test Product 1",
+//                 Price = 99.99m,
+//                 Category = "Electronics",
+//                 CreatedAt = DateTimeOffset.UtcNow,
+//                 UpdatedAt = DateTimeOffset.UtcNow
+//             },
+//             new TestProduct
+//             {
+//                 Id = 2,
+//                 Name = "Test Product 2",
+//                 Price = 199.99m,
+//                 Category = "Books",
+//                 CreatedAt = DateTimeOffset.UtcNow,
+//                 UpdatedAt = DateTimeOffset.UtcNow
+//             }
+//         );
+//     }
+// }
 
-    public DbSet<TestProduct> Products { get; set; }
-    public DbSet<TestOrder> Orders { get; set; }
+// /// <summary>
+// /// Utilities for creating test services and dependencies
+// /// </summary>
+// public static class TestServiceFactory
+// {
+//     /// <summary>
+//     /// Creates a test service collection with all necessary dependencies
+//     /// </summary>
+//     public static ServiceCollection CreateTestServices()
+//     {
+//         var services = new ServiceCollection();
+//
+//         // Logging
+//         services.AddLogging(builder =>
+//         {
+//             builder.AddConsole();
+//             builder.SetMinimumLevel(LogLevel.Debug);
+//         });
+//
+//         // DbContext with InMemory database
+//         services.AddDbContext<TestDbContext>(options =>
+//             options.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()));
+//
+//         return services;
+//     }
+//
+//     /// <summary>
+//     /// Creates a configured test DbContext
+//     /// </summary>
+//     public static TestDbContext CreateTestDbContext()
+//     {
+//         var options = new DbContextOptionsBuilder<TestDbContext>()
+//             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+//             .Options;
+//
+//         var context = new TestDbContext(options);
+//         context.Database.EnsureCreated();
+//
+//         return context;
+//     }
+//
+//     /// <summary>
+//     /// Creates a test DbContext with seeded data
+//     /// </summary>
+//     public static async Task<TestDbContext> CreateSeededTestDbContextAsync()
+//     {
+//         var context = CreateTestDbContext();
+//
+//         // Add additional test data without JSON metadata first
+//         var products = new List<TestProduct>
+//         {
+//             new()
+//             {
+//                 Name = "Seeded Product 1",
+//                 Price = 29.99m,
+//                 Category = "Software"
+//             },
+//             new()
+//             {
+//                 Name = "Seeded Product 2",
+//                 Price = 49.99m,
+//                 Category = "Hardware"
+//             }
+//         };
+//
+//         context.Products.AddRange(products);
+//         await context.SaveChangesAsync();
+//
+//         // Update with JSON metadata after initial save to avoid conversion issues
+//         var product1 = products[0];
+//         var product2 = products[1];
+//
+//         product1.Metadata = JsonNode.Parse("""{"tags": ["popular", "new"], "rating": 4.5}""")?.AsObject();
+//         product2.Metadata = JsonNode.Parse("""{"tags": ["premium"], "rating": 4.8}""")?.AsObject();
+//
+//         await context.SaveChangesAsync();
+//
+//         return context;
+//     }
+// }
 
-    private static string? JsonObjectToString(JsonObject? jsonObject)
-    {
-        return jsonObject?.ToJsonString();
-    }
-
-    private static JsonObject? StringToJsonObject(string? jsonString)
-    {
-        if (string.IsNullOrEmpty(jsonString))
-            return null;
-
-        try
-        {
-            var node = JsonNode.Parse(jsonString);
-            return node?.AsObject();
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-
-        // Product configuration
-        modelBuilder.Entity<TestProduct>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            
-            entity.Property(e => e.Name)
-                  .IsRequired()
-                  .HasMaxLength(200);
-
-            entity.Property(e => e.Category)
-                  .IsRequired()
-                  .HasMaxLength(100);
-
-            entity.Property(e => e.Price)
-                  .HasPrecision(18, 2);
-
-            // JSON column configuration with value converter for InMemory compatibility
-            entity.Property(e => e.Metadata)
-                  .IsRequired(false)
-                  .HasConversion(
-                      v => JsonObjectToString(v),
-                      v => StringToJsonObject(v));
-
-            // Soft delete index
-            entity.HasIndex(e => e.IsDeleted)
-                  .HasDatabaseName("IX_Products_IsDeleted");
-        });
-
-        // Order configuration  
-        modelBuilder.Entity<TestOrder>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-
-            entity.Property(e => e.CustomerEmail)
-                  .IsRequired()
-                  .HasMaxLength(256);
-
-            entity.Property(e => e.TotalAmount)
-                  .HasPrecision(18, 2);
-
-            entity.Property(e => e.Status)
-                  .HasConversion<string>();
-
-            // Foreign key relationship
-            entity.HasOne(e => e.Product)
-                  .WithMany(p => p.Orders)
-                  .HasForeignKey(e => e.ProductId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // Seed test data
-        modelBuilder.Entity<TestProduct>().HasData(
-            new TestProduct 
-            { 
-                Id = 1, 
-                Name = "Test Product 1", 
-                Price = 99.99m, 
-                Category = "Electronics",
-                CreatedAt = DateTimeOffset.UtcNow,
-                UpdatedAt = DateTimeOffset.UtcNow
-            },
-            new TestProduct 
-            { 
-                Id = 2, 
-                Name = "Test Product 2", 
-                Price = 199.99m, 
-                Category = "Books",
-                CreatedAt = DateTimeOffset.UtcNow,
-                UpdatedAt = DateTimeOffset.UtcNow
-            }
-        );
-    }
-}
-
-/// <summary>
-/// Utilities for creating test services and dependencies
-/// </summary>
-public static class TestServiceFactory
-{
-    /// <summary>
-    /// Creates a test service collection with all necessary dependencies
-    /// </summary>
-    public static ServiceCollection CreateTestServices()
-    {
-        var services = new ServiceCollection();
-        
-        // Logging
-        services.AddLogging(builder => 
-        {
-            builder.AddConsole();
-            builder.SetMinimumLevel(LogLevel.Debug);
-        });
-
-        // DbContext with InMemory database
-        services.AddDbContext<TestDbContext>(options =>
-            options.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()));
-
-        return services;
-    }
-
-    /// <summary>
-    /// Creates a configured test DbContext
-    /// </summary>
-    public static TestDbContext CreateTestDbContext()
-    {
-        var options = new DbContextOptionsBuilder<TestDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        var context = new TestDbContext(options);
-        context.Database.EnsureCreated();
-        
-        return context;
-    }
-
-    /// <summary>
-    /// Creates a test DbContext with seeded data
-    /// </summary>
-    public static async Task<TestDbContext> CreateSeededTestDbContextAsync()
-    {
-        var context = CreateTestDbContext();
-
-        // Add additional test data without JSON metadata first
-        var products = new List<TestProduct>
-        {
-            new() 
-            { 
-                Name = "Seeded Product 1", 
-                Price = 29.99m, 
-                Category = "Software"
-            },
-            new() 
-            { 
-                Name = "Seeded Product 2", 
-                Price = 49.99m, 
-                Category = "Hardware"
-            }
-        };
-
-        context.Products.AddRange(products);
-        await context.SaveChangesAsync();
-
-        // Update with JSON metadata after initial save to avoid conversion issues
-        var product1 = products[0];
-        var product2 = products[1];
-
-        product1.Metadata = JsonNode.Parse("""{"tags": ["popular", "new"], "rating": 4.5}""")?.AsObject();
-        product2.Metadata = JsonNode.Parse("""{"tags": ["premium"], "rating": 4.8}""")?.AsObject();
-
-        await context.SaveChangesAsync();
-
-        return context;
-    }
-}
-
-/// <summary>
-/// Test data builders for consistent test entity creation
-/// </summary>
-public class TestProductBuilder
-{
-    private TestProduct _product = new();
-
-    public TestProductBuilder WithName(string name)
-    {
-        _product.Name = name;
-        return this;
-    }
-
-    public TestProductBuilder WithPrice(decimal price)
-    {
-        _product.Price = price;
-        return this;
-    }
-
-    public TestProductBuilder WithCategory(string category)
-    {
-        _product.Category = category;
-        return this;
-    }
-
-    public TestProductBuilder WithMetadata(JsonObject metadata)
-    {
-        _product.Metadata = metadata;
-        return this;
-    }
-
-    public TestProductBuilder AsDeleted()
-    {
-        _product.IsDeleted = true;
-        _product.DeletedAt = DateTimeOffset.UtcNow;
-        return this;
-    }
-
-    public TestProductBuilder AsInactive()
-    {
-        _product.IsActive = false;
-        return this;
-    }
-
-    public TestProduct Build() => _product;
-
-    public static TestProductBuilder Create() => new();
-}
+// /// <summary>
+// /// Test data builders for consistent test entity creation
+// /// </summary>
+// public class TestProductBuilder
+// {
+//     private TestProduct _product = new();
+//
+//     public TestProductBuilder WithName(string name)
+//     {
+//         _product.Name = name;
+//         return this;
+//     }
+//
+//     public TestProductBuilder WithPrice(decimal price)
+//     {
+//         _product.Price = price;
+//         return this;
+//     }
+//
+//     public TestProductBuilder WithCategory(string category)
+//     {
+//         _product.Category = category;
+//         return this;
+//     }
+//
+//     public TestProductBuilder WithMetadata(JsonObject metadata)
+//     {
+//         _product.Metadata = metadata;
+//         return this;
+//     }
+//
+//     public TestProductBuilder AsDeleted()
+//     {
+//         _product.IsDeleted = true;
+//         _product.DeletedAt = DateTimeOffset.UtcNow;
+//         return this;
+//     }
+//
+//     public TestProductBuilder AsInactive()
+//     {
+//         _product.IsActive = false;
+//         return this;
+//     }
+//
+//     public TestProduct Build() => _product;
+//
+//     public static TestProductBuilder Create() => new();
+// }
 
 public class TestOrderBuilder
 {
