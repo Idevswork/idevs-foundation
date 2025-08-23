@@ -95,33 +95,74 @@ jobs:
     
     - name: Determine Version
       id: version
+      continue-on-error: true
       uses: gittools/actions/gitversion/execute@v4
       with:
         configFilePath: 'GitVersion.yml'
+    
+    - name: Set Fallback Version
+      id: fallback-version
+      if: steps.version.outcome == 'failure'
+      run: |
+        echo "GitVersion failed, using fallback versioning"
+        BRANCH_NAME=${GITHUB_REF#refs/heads/}
+        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+        SHORT_SHA=${GITHUB_SHA::7}
+        
+        if [[ "$BRANCH_NAME" == "main" ]]; then
+          VERSION="1.0.0"
+          PACKAGE_VERSION="1.0.0"
+        elif [[ "$BRANCH_NAME" == "develop" ]]; then
+          VERSION="1.0.0-alpha.${TIMESTAMP}"
+          PACKAGE_VERSION="1.0.0-alpha.${TIMESTAMP}"
+        else
+          VERSION="1.0.0-beta.${TIMESTAMP}"
+          PACKAGE_VERSION="1.0.0-beta.${TIMESTAMP}"
+        fi
+        
+        echo "assemblySemVer=$VERSION" >> $GITHUB_OUTPUT
+        echo "nuGetVersionV2=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+        echo "assemblySemFileVer=$VERSION.0" >> $GITHUB_OUTPUT
+        
+        echo "Using fallback version: $PACKAGE_VERSION"
     
     - name: Restore dependencies
       run: dotnet restore Idevs.Foundation.sln
     
     - name: Build consolidated package
       run: |
+        # Use GitVersion outputs if available, otherwise use fallback
+        VERSION="${{ steps.version.outputs.assemblySemVer || steps.fallback-version.outputs.assemblySemVer }}"
+        PACKAGE_VERSION="${{ steps.version.outputs.nuGetVersionV2 || steps.fallback-version.outputs.nuGetVersionV2 }}"
+        FILE_VERSION="${{ steps.version.outputs.assemblySemFileVer || steps.fallback-version.outputs.assemblySemFileVer }}"
+        
+        echo "Using versions: $VERSION | $PACKAGE_VERSION | $FILE_VERSION"
+        
         dotnet build src/Idevs.Foundation/Idevs.Foundation.csproj \
           --configuration Release \
           --no-restore \
-          -p:Version=${{ steps.version.outputs.assemblySemVer }} \
-          -p:PackageVersion=${{ steps.version.outputs.nuGetVersionV2 }} \
-          -p:AssemblyVersion=${{ steps.version.outputs.assemblySemVer }} \
-          -p:FileVersion=${{ steps.version.outputs.assemblySemFileVer }}
+          -p:Version="$VERSION" \
+          -p:PackageVersion="$PACKAGE_VERSION" \
+          -p:AssemblyVersion="$VERSION" \
+          -p:FileVersion="$FILE_VERSION"
     
     - name: Build individual packages
       if: github.ref == 'refs/heads/main' || github.event_name == 'release'
       run: |
+        # Use GitVersion outputs if available, otherwise use fallback
+        VERSION="${{ steps.version.outputs.assemblySemVer || steps.fallback-version.outputs.assemblySemVer }}"
+        PACKAGE_VERSION="${{ steps.version.outputs.nuGetVersionV2 || steps.fallback-version.outputs.nuGetVersionV2 }}"
+        FILE_VERSION="${{ steps.version.outputs.assemblySemFileVer || steps.fallback-version.outputs.assemblySemFileVer }}"
+        
+        echo "Using versions: $VERSION | $PACKAGE_VERSION | $FILE_VERSION"
+        
         dotnet build --configuration Release \
           --no-restore \
           -p:GenerateIndividualPackages=true \
-          -p:Version=${{ steps.version.outputs.assemblySemVer }} \
-          -p:PackageVersion=${{ steps.version.outputs.nuGetVersionV2 }} \
-          -p:AssemblyVersion=${{ steps.version.outputs.assemblySemVer }} \
-          -p:FileVersion=${{ steps.version.outputs.assemblySemFileVer }}
+          -p:Version="$VERSION" \
+          -p:PackageVersion="$PACKAGE_VERSION" \
+          -p:AssemblyVersion="$VERSION" \
+          -p:FileVersion="$FILE_VERSION"
     
     - name: Upload package artifacts
       uses: actions/upload-artifact@v4
