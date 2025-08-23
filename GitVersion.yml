@@ -10,7 +10,7 @@ branches:
     mode: ContinuousDelivery
     label: ''
     increment: Patch
-    prevent-increment-of-merged-branch-version: true
+    prevent-increment-when-branch-merged: true
     track-merge-target: false
     regex: ^main$
     source-branches: ['develop', 'release']
@@ -19,7 +19,7 @@ branches:
     mode: ContinuousDeployment
     label: 'alpha'
     increment: Minor
-    prevent-increment-of-merged-branch-version: false
+    prevent-increment-when-branch-merged: false
     track-merge-target: true
     regex: ^develop$
     source-branches: []
@@ -28,7 +28,7 @@ branches:
     mode: ContinuousDelivery
     label: 'beta'
     increment: None
-    prevent-increment-of-merged-branch-version: true
+    prevent-increment-when-branch-merged: true
     track-merge-target: false
     regex: ^releases?[/-]
     source-branches: ['develop']
@@ -37,7 +37,7 @@ branches:
     mode: ContinuousDeployment
     label: 'alpha'
     increment: Inherit
-    prevent-increment-of-merged-branch-version: false
+    prevent-increment-when-branch-merged: false
     track-merge-target: false
     regex: ^features?[/-]
     source-branches: ['develop']
@@ -46,7 +46,7 @@ branches:
     mode: ContinuousDeployment
     label: 'pr'
     increment: Inherit
-    prevent-increment-of-merged-branch-version: false
+    prevent-increment-when-branch-merged: false
     track-merge-target: false
     regex: ^(pull|pull\-requests|pr)[/-]
     source-branches: ['develop', 'main', 'release', 'feature', 'support', 'hotfix']
@@ -55,7 +55,7 @@ branches:
     mode: ContinuousDeployment
     label: 'beta'
     increment: Patch
-    prevent-increment-of-merged-branch-version: false
+    prevent-increment-when-branch-merged: false
     track-merge-target: false
     regex: ^hotfix(es)?[/-]
     source-branches: ['main']
