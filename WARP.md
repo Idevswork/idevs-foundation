@@ -4,18 +4,18 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 
 ## Repository Overview
 
-**IdevsWork.Foundation** is a comprehensive .NET 8.0 foundation framework that provides essential building blocks for modern applications with CQRS patterns, Entity Framework integration, centralized logging, and dependency injection abstractions.
+**Idevs.Foundation** is a comprehensive .NET 8.0 foundation framework that provides essential building blocks for modern applications with CQRS patterns, Entity Framework integration, centralized logging, and dependency injection abstractions.
 
 ### Core Architecture
 
 The framework follows a layered, modular architecture with the following key components:
 
 #### **Foundation Layers:**
-- **Abstractions Layer** (`IdevsWork.Foundation.Abstractions`) - Core interfaces and contracts
-- **Entity Framework Layer** (`IdevsWork.Foundation.EntityFramework`) - EF Core implementations with audit trails and soft deletion
-- **CQRS Layer** (`IdevsWork.Foundation.Cqrs`) - Command Query Responsibility Segregation patterns
-- **Mediator Layer** (`IdevsWork.Foundation.Mediator`) - Mediator pattern implementation
-- **Services Layer** (`IdevsWork.Foundation.Services`) - Generic service implementations with CQRS support
+- **Abstractions Layer** (`Idevs.Foundation.Abstractions`) - Core interfaces and contracts
+- **Entity Framework Layer** (`Idevs.Foundation.EntityFramework`) - EF Core implementations with audit trails and soft deletion
+- **CQRS Layer** (`Idevs.Foundation.Cqrs`) - Command Query Responsibility Segregation patterns
+- **Mediator Layer** (`Idevs.Foundation.Mediator`) - Mediator pattern implementation
+- **Services Layer** (`Idevs.Foundation.Services`) - Generic service implementations with CQRS support
 - **Infrastructure Layers** - Autofac DI integration, Serilog logging integration
 
 #### **Key Patterns:**
@@ -30,7 +30,7 @@ The framework follows a layered, modular architecture with the following key com
 
 ```bash
 # Build entire solution
-dotnet build IdevsWork.Foundation.sln
+dotnet build Idevs.Foundation.sln
 
 # Build with specific configuration
 dotnet build --configuration Release
@@ -46,6 +46,23 @@ dotnet build --configuration Debug
 dotnet restore
 ```
 
+### CI/CD Commands
+
+```bash
+# Check workflow status
+gh workflow list
+gh workflow view ci-cd.yml
+
+# Trigger manual workflow run (if configured)
+gh workflow run ci-cd.yml
+
+# View recent workflow runs
+gh run list --workflow=ci-cd.yml
+
+# Check latest run status
+gh run view --log
+```
+
 ### Testing Commands
 
 ```bash
@@ -56,14 +73,14 @@ dotnet test
 dotnet test --collect:"XPlat Code Coverage"
 
 # Run specific test project
-dotnet test tests/IdevsWork.Foundation.Tests/IdevsWork.Foundation.Tests.csproj
+dotnet test tests/Idevs.Foundation.Tests/Idevs.Foundation.Tests.csproj
 ```
 
 ### Package Management
 
 ```bash
 # Pack consolidated package
-dotnet pack src/IdevsWork.Foundation/IdevsWork.Foundation.csproj --configuration Release
+dotnet pack src/Idevs.Foundation/Idevs.Foundation.csproj --configuration Release
 
 # Pack individual packages
 dotnet build --configuration Release -p:GenerateIndividualPackages=true
@@ -106,7 +123,7 @@ Use `services.AddFoundationLoggingWithStaticAccess()` for full logging capabilit
 
 - Unit tests use xUnit framework
 - Mock `ILogManager` and repository interfaces for service testing
-- Test projects target .NET 9.0 for latest testing features
+- Test projects target .NET 8.0 to match the solution framework
 - Use in-memory databases for integration testing Entity Framework repositories
 
 ## Project Structure Understanding
@@ -114,7 +131,7 @@ Use `services.AddFoundationLoggingWithStaticAccess()` for full logging capabilit
 ### Packaging Strategy
 
 The framework supports **dual packaging**:
-- **Consolidated Package** (`IdevsWork.Foundation`) - Single package containing all components
+- **Consolidated Package** (`Idevs.Foundation`) - Single package containing all components
 - **Individual Packages** - Granular packages for specific functionality
 
 Package generation is controlled by MSBuild properties in `Directory.Build.props`:
@@ -203,6 +220,62 @@ The framework is designed for extensibility:
 - Custom CQRS command/query implementations
 - Custom repository implementations with specialized query methods
 - Custom mapper implementations for complex entity-DTO relationships
+
+## CI/CD Pipeline
+
+The repository includes a comprehensive GitHub Actions CI/CD pipeline:
+
+### Workflow Overview
+
+1. **Build and Test** - Runs on all pushes and pull requests
+   - Builds solution with .NET 8.0
+   - Runs unit tests with code coverage
+   - Uploads test results and coverage reports
+
+2. **Package Creation** - Automated semantic versioning and package generation
+   - Uses GitVersion for automatic version calculation
+   - Builds consolidated package for all branches
+   - Builds individual packages for main branch and releases
+
+3. **Publishing Strategy**:
+   - **Preview** (develop branch) → GitHub Packages with alpha versions
+   - **Release** (main branch) → NuGet.org and GitHub Packages
+   - **GitHub Releases** → Automatic package attachment
+
+### Branch Strategy (GitFlow)
+
+- `main` - Production releases (publishes to NuGet.org)
+- `develop` - Development integration (publishes preview packages)
+- `feature/*` - Feature development branches
+- `release/*` - Release preparation branches
+- `hotfix/*` - Emergency fixes
+
+### Semantic Versioning
+
+Versions are automatically calculated based on branch and commit messages:
+
+```bash
+# Commit message examples for version control
+git commit -m "feat: new feature +semver: minor"
+git commit -m "fix: bug fix +semver: patch"
+git commit -m "feat!: breaking change +semver: major"
+git commit -m "docs: update docs +semver: none"
+```
+
+### Security and Quality
+
+- **CodeQL Analysis** - Weekly security scans
+- **Dependabot** - Automated dependency updates
+- **Code Coverage** - Integrated with Codecov
+- **Environment Protection** - Production deployments require approval
+
+### Setup Requirements
+
+To enable full CI/CD functionality, configure these repository secrets:
+- `NUGET_API_KEY` - For publishing to NuGet.org
+- `CODECOV_TOKEN` - For code coverage reports (optional)
+
+See `.github/README.md` for detailed setup instructions.
 
 <citations>
 <document>

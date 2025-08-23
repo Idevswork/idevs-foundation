@@ -1,0 +1,66 @@
+mode: ContinuousDelivery
+tag-prefix: 'v'
+major-version-bump-message: '\+semver:\s?(breaking|major)'
+minor-version-bump-message: '\+semver:\s?(feature|minor)'
+patch-version-bump-message: '\+semver:\s?(fix|patch)'
+no-bump-message: '\+semver:\s?(none|skip)'
+
+branches:
+  main:
+    mode: ContinuousDelivery
+    tag: ''
+    increment: Patch
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    regex: ^main$
+    source-branches: ['develop', 'release']
+
+  develop:
+    mode: ContinuousDeployment
+    tag: 'alpha'
+    increment: Minor
+    prevent-increment-of-merged-branch-version: false
+    track-merge-target: true
+    regex: ^develop$
+    source-branches: []
+
+  release:
+    mode: ContinuousDelivery
+    tag: 'beta'
+    increment: None
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    regex: ^releases?[/-]
+    source-branches: ['develop']
+
+  feature:
+    mode: ContinuousDeployment
+    tag: 'alpha'
+    increment: Inherit
+    prevent-increment-of-merged-branch-version: false
+    track-merge-target: false
+    regex: ^features?[/-]
+    source-branches: ['develop']
+
+  pull-request:
+    mode: ContinuousDeployment
+    tag: 'pr'
+    increment: Inherit
+    prevent-increment-of-merged-branch-version: false
+    track-merge-target: false
+    regex: ^(pull|pull\-requests|pr)[/-]
+    source-branches: ['develop', 'main', 'release', 'feature', 'support', 'hotfix']
+
+  hotfix:
+    mode: ContinuousDeployment
+    tag: 'beta'
+    increment: Patch
+    prevent-increment-of-merged-branch-version: false
+    track-merge-target: false
+    regex: ^hotfix(es)?[/-]
+    source-branches: ['main']
+
+ignore:
+  sha: []
+
+commit-message-incrementing: Enabled

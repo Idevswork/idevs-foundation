@@ -1,6 +1,6 @@
 # CQRS and Mediator Usage Examples
 
-This document provides examples of how to use the CQRS and Mediator components of the IdevsWork.Foundation framework.
+This document provides examples of how to use the CQRS and Mediator components of the Idevs.Foundation framework.
 
 ## Setup with Autofac
 
@@ -9,7 +9,7 @@ First, let's set up the application to use Autofac with the Foundation module:
 ```csharp
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using IdevsWork.Foundation.Autofac.Extensions;
+using Idevs.Foundation.Autofac.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
@@ -48,9 +48,9 @@ public class Program
 First, define your commands and handlers:
 
 ```csharp
-using IdevsWork.Foundation.Cqrs.Commands;
-using IdevsWork.Foundation.Cqrs.Results;
-using IdevsWork.Foundation.EntityFramework.Entities;
+using Idevs.Foundation.Cqrs.Commands;
+using Idevs.Foundation.Cqrs.Results;
+using Idevs.Foundation.EntityFramework.Entities;
 
 // Command definition
 public record CreateProductCommand(string Name, decimal Price) : ICommand<Result<ProductDto>>;
@@ -103,8 +103,8 @@ You can add a validation behavior to validate commands before they reach the han
 
 ```csharp
 using FluentValidation;
-using IdevsWork.Foundation.Cqrs.Behaviors;
-using IdevsWork.Foundation.Cqrs.Results;
+using Idevs.Foundation.Cqrs.Behaviors;
+using Idevs.Foundation.Cqrs.Results;
 using Microsoft.Extensions.Logging;
 
 // Validator for the command
@@ -192,7 +192,7 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
 ### Create Query and Handler
 
 ```csharp
-using IdevsWork.Foundation.Cqrs.Queries;
+using Idevs.Foundation.Cqrs.Queries;
 
 // Query definition
 public record GetProductByIdQuery(int Id) : IQuery<ProductDto?>;
@@ -224,7 +224,7 @@ public class GetProductByIdQueryHandler : IQueryHandler<GetProductByIdQuery, Pro
 You can add a caching behavior to cache query results:
 
 ```csharp
-using IdevsWork.Foundation.Cqrs.Behaviors;
+using Idevs.Foundation.Cqrs.Behaviors;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
@@ -279,8 +279,8 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 Now you can use the mediator to send commands and queries:
 
 ```csharp
-using IdevsWork.Foundation.Cqrs.Results;
-using IdevsWork.Foundation.Mediator.Core;
+using Idevs.Foundation.Cqrs.Results;
+using Idevs.Foundation.Mediator.Core;
 
 public class ProductService
 {
@@ -310,9 +310,9 @@ public class ProductService
 ServiceBase provides built-in structured logging and error handling:
 
 ```csharp
-using IdevsWork.Foundation.Services;
-using IdevsWork.Foundation.Cqrs.Results;
-using IdevsWork.Foundation.Mediator.Core;
+using Idevs.Foundation.Services;
+using Idevs.Foundation.Cqrs.Results;
+using Idevs.Foundation.Mediator.Core;
 using Microsoft.Extensions.Logging;
 
 public class ProductService : ServiceBase
@@ -389,7 +389,7 @@ public class ProductService : ServiceBase
 You can also use the CqrsGenericService for common operations:
 
 ```csharp
-using IdevsWork.Foundation.Services;
+using Idevs.Foundation.Services;
 
 public class ProductService : CqrsGenericService<Product, int>
 {
@@ -431,4 +431,4 @@ public class ProductService : CqrsGenericService<Product, int>
 
 ## Conclusion
 
-The CQRS and Mediator components of the IdevsWork.Foundation framework provide a structured way to handle your application's business logic. They help separate read and write operations, making your code more maintainable and testable. The pipeline behaviors allow you to add cross-cutting concerns like validation, logging, and caching in a clean and reusable way.
+The CQRS and Mediator components of the Idevs.Foundation framework provide a structured way to handle your application's business logic. They help separate read and write operations, making your code more maintainable and testable. The pipeline behaviors allow you to add cross-cutting concerns like validation, logging, and caching in a clean and reusable way.

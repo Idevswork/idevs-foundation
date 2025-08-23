@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the IdevsWork.Foundation project will be documented in this file.
+All notable changes to the Idevs.Foundation project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -37,13 +37,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **Core Foundation Framework Components:**
-  - `IdevsWork.Foundation.Abstractions` - Core abstractions and interfaces for entities, repositories, and services
-  - `IdevsWork.Foundation.Services` - Base service implementations with dependency injection support
-  - `IdevsWork.Foundation.Mediator` - Mediator pattern implementation for request/response handling
-  - `IdevsWork.Foundation.Cqrs` - Command Query Responsibility Segregation abstractions and implementations
-  - `IdevsWork.Foundation.EntityFramework` - Entity Framework Core integration and repository implementations
-  - `IdevsWork.Foundation.Serilog` - Structured logging integration with Serilog
-  - `IdevsWork.Foundation.Autofac` - Dependency injection container integration with Autofac
+  - `Idevs.Foundation.Abstractions` - Core abstractions and interfaces for entities, repositories, and services
+  - `Idevs.Foundation.Services` - Base service implementations with dependency injection support
+  - `Idevs.Foundation.Mediator` - Mediator pattern implementation for request/response handling
+  - `Idevs.Foundation.Cqrs` - Command Query Responsibility Segregation abstractions and implementations
+  - `Idevs.Foundation.EntityFramework` - Entity Framework Core integration and repository implementations
+  - `Idevs.Foundation.Serilog` - Structured logging integration with Serilog
+  - `Idevs.Foundation.Autofac` - Dependency injection container integration with Autofac
 
 - **Entity CQRS Pattern Support:**
   - Entity command and query abstractions (`EntityCommand`, `EntityQuery`)
@@ -103,5 +103,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **[1.0.0]** - Initial stable release with complete Foundation framework
 - **[Unreleased]** - Current development version
 
-[unreleased]: https://github.com/your-org/IdevsWork.Foundation/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/your-org/IdevsWork.Foundation/releases/tag/v1.0.0
+[unreleased]: https://github.com/Idevswork/idevs-foundation/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/Idevswork/idevs-foundation/releases/tag/v1.0.0

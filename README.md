@@ -1,15 +1,15 @@
-# IdevsWork Foundation
+# Idevs Foundation
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-blue.svg)](https://dotnet.microsoft.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![NuGet](https://img.shields.io/badge/NuGet-Available-brightgreen.svg)](https://www.nuget.org/)
-[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://github.com/your-org/IdevsWork.Foundation)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://github.com/Idevswork/idevs-foundation)
 
 A comprehensive .NET foundation framework that provides essential building blocks for modern applications. Built with CQRS patterns, Entity Framework integration, centralized logging, and dependency injection abstractions.
 
 ## Overview
 
-IdevsWork.Foundation provides a set of reusable abstractions and implementations for common data access patterns in .NET applications. It follows the Repository and Unit of Work patterns with support for audit trails, soft deletion, and extensible querying.
+Idevs.Foundation provides a set of reusable abstractions and implementations for common data access patterns in .NET applications. It follows the Repository and Unit of Work patterns with support for audit trails, soft deletion, and extensible querying.
 
 ## ✨ New Features
 
@@ -18,7 +18,7 @@ IdevsWork.Foundation provides a set of reusable abstractions and implementations
 Get all Foundation components in a single package:
 
 ```bash
-dotnet add package IdevsWork.Foundation
+dotnet add package Idevs.Foundation
 ```
 
 This includes all individual components with guaranteed compatibility and simplified dependency management.
@@ -47,53 +47,53 @@ See [Logging Documentation](docs/LOGGING.md) for comprehensive usage examples.
 
 ## 📦 Individual Packages
 
-### IdevsWork.Foundation.Abstractions
+### Idevs.Foundation.Abstractions
 Core interfaces and contracts that define the foundation's API.
 
 ```bash
-dotnet add package IdevsWork.Foundation.Abstractions
+dotnet add package Idevs.Foundation.Abstractions
 ```
 
-### IdevsWork.Foundation.EntityFramework  
+### Idevs.Foundation.EntityFramework  
 Entity Framework Core implementation of the foundation abstractions.
 
 ```bash
-dotnet add package IdevsWork.Foundation.EntityFramework
+dotnet add package Idevs.Foundation.EntityFramework
 ```
 
-### IdevsWork.Foundation.Cqrs
+### Idevs.Foundation.Cqrs
 CQRS (Command Query Responsibility Segregation) abstractions and base classes.
 
 ```bash
-dotnet add package IdevsWork.Foundation.Cqrs
+dotnet add package Idevs.Foundation.Cqrs
 ```
 
-### IdevsWork.Foundation.Mediator
+### Idevs.Foundation.Mediator
 Mediator pattern implementation with pipeline behaviors for cross-cutting concerns.
 
 ```bash
-dotnet add package IdevsWork.Foundation.Mediator
+dotnet add package Idevs.Foundation.Mediator
 ```
 
-### IdevsWork.Foundation.Services
+### Idevs.Foundation.Services
 Generic service layer implementations with CQRS support.
 
 ```bash
-dotnet add package IdevsWork.Foundation.Services
+dotnet add package Idevs.Foundation.Services
 ```
 
-### IdevsWork.Foundation.Autofac
+### Idevs.Foundation.Autofac
 Autofac integration with automatic registration of handlers and behaviors.
 
 ```bash
-dotnet add package IdevsWork.Foundation.Autofac
+dotnet add package Idevs.Foundation.Autofac
 ```
 
-### IdevsWork.Foundation.Serilog
+### Idevs.Foundation.Serilog
 Serilog integration with Foundation-specific logging configurations and extensions.
 
 ```bash
-dotnet add package IdevsWork.Foundation.Serilog
+dotnet add package Idevs.Foundation.Serilog
 ```
 
 ## Quick Start
@@ -101,7 +101,7 @@ dotnet add package IdevsWork.Foundation.Serilog
 ### 1. Define Your Entity
 
 ```csharp
-using IdevsWork.Foundation.EntityFramework.Entities;
+using Idevs.Foundation.EntityFramework.Entities;
 
 public class Product : SoftDeletableEntity<int>
 {
@@ -114,7 +114,7 @@ public class Product : SoftDeletableEntity<int>
 ### 2. Create Repository Interface
 
 ```csharp
-using IdevsWork.Foundation.Abstractions.Repositories;
+using Idevs.Foundation.Abstractions.Repositories;
 
 public interface IProductRepository : IRepositoryBase<Product, int>
 {
@@ -125,7 +125,7 @@ public interface IProductRepository : IRepositoryBase<Product, int>
 ### 3. Implement Repository
 
 ```csharp
-using IdevsWork.Foundation.EntityFramework.Repositories;
+using Idevs.Foundation.EntityFramework.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -228,8 +228,8 @@ services.AddScoped<ProductService>();
 ServiceBase provides built-in structured logging for all CQRS operations:
 
 ```csharp
-using IdevsWork.Foundation.Services;
-using IdevsWork.Foundation.Mediator.Core;
+using Idevs.Foundation.Services;
+using Idevs.Foundation.Mediator.Core;
 using Microsoft.Extensions.Logging;
 
 public class ProductService : ServiceBase
@@ -267,8 +267,8 @@ Easily configure Serilog with Foundation components:
 ```csharp
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using IdevsWork.Foundation.Autofac.Extensions;
-using IdevsWork.Foundation.Serilog.Extensions;
+using Idevs.Foundation.Autofac.Extensions;
+using Idevs.Foundation.Serilog.Extensions;
 
 var host = Host.CreateDefaultBuilder(args)
     .UseServiceProviderFactory(new AutofacServiceProviderFactory())
@@ -345,7 +345,7 @@ Add Serilog configuration to your `appsettings.json`:
       "Override": {
         "Microsoft": "Warning",
         "System": "Warning",
-        "IdevsWork.Foundation": "Debug"
+        "Idevs.Foundation": "Debug"
       }
     },
     "WriteTo": [
