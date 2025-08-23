@@ -1,6 +1,6 @@
 # GitHub Actions CI/CD Setup
 
-This directory contains the GitHub Actions workflows and configuration for the IdevsWork.Foundation repository.
+This directory contains the GitHub Actions workflows and configuration for the Idevs.Foundation repository.
 
 ## Overview
 
@@ -107,7 +107,7 @@ docs: update README +semver: none
 
 ## Package Publishing Strategy
 
-### Consolidated Package (`IdevsWork.Foundation`)
+### Consolidated Package (`Idevs.Foundation`)
 - Contains all Foundation components
 - Published on every build (develop/main)
 - Recommended for most consumers

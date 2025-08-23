@@ -11,8 +11,8 @@
     
     <!-- Package Information -->
     <Authors>Sarawut Phaekuntod</Authors>
-    <Company>IdevsWork</Company>
-    <Copyright>© 2025 IdevsWork. All rights reserved.</Copyright>
+    <Company>Idevs</Company>
+    <Copyright>© 2025 Idevs. All rights reserved.</Copyright>
     <PackageProjectUrl>https://github.com/Idevswork/idevs-foundation</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Idevswork/idevs-foundation.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -24,8 +24,8 @@
     <VersionSuffix Condition="'$(Configuration)' == 'Debug'">alpha</VersionSuffix>
     
     <!-- Build Configuration -->
-    <GeneratePackageOnBuild Condition="'$(PackageId)' == 'IdevsWork.Foundation' OR '$(GenerateIndividualPackages)' == 'true'">true</GeneratePackageOnBuild>
-    <GeneratePackageOnBuild Condition="'$(PackageId)' != 'IdevsWork.Foundation' AND '$(GenerateIndividualPackages)' != 'true'">false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild Condition="'$(PackageId)' == 'Idevs.Foundation' OR '$(GenerateIndividualPackages)' == 'true'">true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild Condition="'$(PackageId)' != 'Idevs.Foundation' AND '$(GenerateIndividualPackages)' != 'true'">false</GeneratePackageOnBuild>
     <PackageOutputPath>$(MSBuildThisFileDirectory)artifacts</PackageOutputPath>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn> <!-- Missing XML comment warnings -->

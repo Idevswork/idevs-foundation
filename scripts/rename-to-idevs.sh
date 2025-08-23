@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Comprehensive script to rename IdevsWork to Idevs
+# Comprehensive script to rename Idevs to Idevs
 # This script will rename directories, files, and content systematically
 
 set -e
@@ -96,7 +96,7 @@ rename_directories() {
     done
 }
 
-print_status "Starting comprehensive rename from IdevsWork to Idevs..."
+print_status "Starting comprehensive rename from Idevs to Idevs..."
 print_warning "This will modify many files. Make sure you have committed your changes!"
 
 # Confirm before proceeding
@@ -111,40 +111,40 @@ fi
 print_status "=== Step 1: Updating file contents ==="
 
 # Replace in C# files
-replace_content_in_files "IdevsWork" "Idevs" "*.cs"
+replace_content_in_files "Idevs" "Idevs" "*.cs"
 
 # Replace in project files
-replace_content_in_files "IdevsWork" "Idevs" "*.csproj"
+replace_content_in_files "Idevs" "Idevs" "*.csproj"
 
 # Replace in solution files
-replace_content_in_files "IdevsWork" "Idevs" "*.sln"
+replace_content_in_files "Idevs" "Idevs" "*.sln"
 
 # Replace in documentation files
-replace_content_in_files "IdevsWork" "Idevs" "*.md"
+replace_content_in_files "Idevs" "Idevs" "*.md"
 
 # Replace in JSON files
-replace_content_in_files "IdevsWork" "Idevs" "*.json"
+replace_content_in_files "Idevs" "Idevs" "*.json"
 
 # Replace in YAML files
-replace_content_in_files "IdevsWork" "Idevs" "*.yml"
-replace_content_in_files "IdevsWork" "Idevs" "*.yaml"
+replace_content_in_files "Idevs" "Idevs" "*.yml"
+replace_content_in_files "Idevs" "Idevs" "*.yaml"
 
 # Replace in shell scripts
-replace_content_in_files "IdevsWork" "Idevs" "*.sh"
+replace_content_in_files "Idevs" "Idevs" "*.sh"
 
 # Replace in props files
-replace_content_in_files "IdevsWork" "Idevs" "*.props"
+replace_content_in_files "Idevs" "Idevs" "*.props"
 
 # Replace in other text files
-replace_content_in_files "IdevsWork" "Idevs" "*.txt"
+replace_content_in_files "Idevs" "Idevs" "*.txt"
 
 # Step 2: Rename files
 print_status "=== Step 2: Renaming files ==="
-rename_files "IdevsWork" "Idevs"
+rename_files "Idevs" "Idevs"
 
 # Step 3: Rename directories
 print_status "=== Step 3: Renaming directories ==="
-rename_directories "IdevsWork" "Idevs"
+rename_directories "Idevs" "Idevs"
 
 print_success "Rename operation completed!"
 print_status "Please verify the changes and test the build."
@@ -155,4 +155,4 @@ echo "Recommended next steps:"
 echo "1. Review the changes: git status"
 echo "2. Test the build: dotnet build"
 echo "3. Run tests: dotnet test"
-echo "4. Commit the changes: git add . && git commit -m 'refactor: rename IdevsWork to Idevs'"
+echo "4. Commit the changes: git add . && git commit -m 'refactor: rename Idevs to Idevs'"

@@ -38,13 +38,13 @@ jobs:
           ${{ runner.os }}-nuget-
     
     - name: Restore dependencies
-      run: dotnet restore IdevsWork.Foundation.sln
+      run: dotnet restore Idevs.Foundation.sln
     
     - name: Build solution
-      run: dotnet build IdevsWork.Foundation.sln --configuration Release --no-restore
+      run: dotnet build Idevs.Foundation.sln --configuration Release --no-restore
     
     - name: Run tests
-      run: dotnet test IdevsWork.Foundation.sln --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+      run: dotnet test Idevs.Foundation.sln --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
     
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v4
@@ -100,11 +100,11 @@ jobs:
         useConfigFile: true
     
     - name: Restore dependencies
-      run: dotnet restore IdevsWork.Foundation.sln
+      run: dotnet restore Idevs.Foundation.sln
     
     - name: Build consolidated package
       run: |
-        dotnet build src/IdevsWork.Foundation/IdevsWork.Foundation.csproj \
+        dotnet build src/Idevs.Foundation/Idevs.Foundation.csproj \
           --configuration Release \
           --no-restore \
           -p:Version=${{ steps.version.outputs.assemblySemVer }} \

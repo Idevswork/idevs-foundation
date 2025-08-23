@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# GitFlow Helper Script for IdevsWork.Foundation
+# GitFlow Helper Script for Idevs.Foundation
 # This script helps manage GitFlow branches and follows semantic versioning
 
 set -e
@@ -227,7 +227,7 @@ show_status() {
 
 # Show help
 show_help() {
-    echo "GitFlow Helper Script for IdevsWork.Foundation"
+    echo "GitFlow Helper Script for Idevs.Foundation"
     echo ""
     echo "Usage: $0 <command> [options]"
     echo ""

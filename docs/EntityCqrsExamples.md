@@ -1,6 +1,6 @@
 # Entity CQRS Usage Examples
 
-This document provides comprehensive examples of how to use the Entity CQRS components from your real-estate-platform integrated into the IdevsWork.Foundation framework.
+This document provides comprehensive examples of how to use the Entity CQRS components from your real-estate-platform integrated into the Idevs.Foundation framework.
 
 ## Overview
 
@@ -21,8 +21,8 @@ First, set up your application with Foundation and Entity CQRS support:
 ```csharp
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using IdevsWork.Foundation.Autofac.Extensions;
-using IdevsWork.Foundation.Serilog.Extensions;
+using Idevs.Foundation.Autofac.Extensions;
+using Idevs.Foundation.Serilog.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var host = Host.CreateDefaultBuilder(args)

@@ -1,23 +1,23 @@
-# IdevsWork Foundation Packaging Strategy
+# Idevs Foundation Packaging Strategy
 
 ## Overview
 
-The IdevsWork.Foundation repository now supports both individual component packages and a single consolidated package, providing flexibility for different use cases.
+The Idevs.Foundation repository now supports both individual component packages and a single consolidated package, providing flexibility for different use cases.
 
 ## Consolidated Package (Recommended)
 
-### Package: `IdevsWork.Foundation`
+### Package: `Idevs.Foundation`
 
 A single NuGet package containing all Foundation components as assemblies in the `lib/net8.0/` folder:
 
-- **IdevsWork.Foundation.dll** - Main entry point and utilities
-- **IdevsWork.Foundation.Abstractions.dll** - Core abstractions and interfaces  
-- **IdevsWork.Foundation.Services.dll** - Base service implementations
-- **IdevsWork.Foundation.Mediator.dll** - Mediator pattern implementation
-- **IdevsWork.Foundation.Cqrs.dll** - CQRS abstractions and implementations
-- **IdevsWork.Foundation.EntityFramework.dll** - Entity Framework integration
-- **IdevsWork.Foundation.Serilog.dll** - Serilog logging integration
-- **IdevsWork.Foundation.Autofac.dll** - Autofac DI container integration
+- **Idevs.Foundation.dll** - Main entry point and utilities
+- **Idevs.Foundation.Abstractions.dll** - Core abstractions and interfaces  
+- **Idevs.Foundation.Services.dll** - Base service implementations
+- **Idevs.Foundation.Mediator.dll** - Mediator pattern implementation
+- **Idevs.Foundation.Cqrs.dll** - CQRS abstractions and implementations
+- **Idevs.Foundation.EntityFramework.dll** - Entity Framework integration
+- **Idevs.Foundation.Serilog.dll** - Serilog logging integration
+- **Idevs.Foundation.Autofac.dll** - Autofac DI container integration
 
 ### Benefits
 
@@ -30,7 +30,7 @@ A single NuGet package containing all Foundation components as assemblies in the
 ### Usage
 
 ```bash
-dotnet add package IdevsWork.Foundation
+dotnet add package Idevs.Foundation
 ```
 
 This automatically includes all Foundation assemblies and their external dependencies.
@@ -47,13 +47,13 @@ For scenarios where you only need specific Foundation components, you can still 
 
 ### Available Packages
 
-- `IdevsWork.Foundation.Abstractions`
-- `IdevsWork.Foundation.Services` 
-- `IdevsWork.Foundation.Mediator`
-- `IdevsWork.Foundation.Cqrs`
-- `IdevsWork.Foundation.EntityFramework`
-- `IdevsWork.Foundation.Serilog`
-- `IdevsWork.Foundation.Autofac`
+- `Idevs.Foundation.Abstractions`
+- `Idevs.Foundation.Services` 
+- `Idevs.Foundation.Mediator`
+- `Idevs.Foundation.Cqrs`
+- `Idevs.Foundation.EntityFramework`
+- `Idevs.Foundation.Serilog`
+- `Idevs.Foundation.Autofac`
 
 ### Build Command
 
@@ -68,8 +68,8 @@ For scenarios where you only need specific Foundation components, you can still 
 The build system uses conditional package generation:
 
 ```xml
-<GeneratePackageOnBuild Condition="'$(PackageId)' == 'IdevsWork.Foundation' OR '$(GenerateIndividualPackages)' == 'true'">true</GeneratePackageOnBuild>
-<GeneratePackageOnBuild Condition="'$(PackageId)' != 'IdevsWork.Foundation' AND '$(GenerateIndividualPackages)' != 'true'">false</GeneratePackageOnBuild>
+<GeneratePackageOnBuild Condition="'$(PackageId)' == 'Idevs.Foundation' OR '$(GenerateIndividualPackages)' == 'true'">true</GeneratePackageOnBuild>
+<GeneratePackageOnBuild Condition="'$(PackageId)' != 'Idevs.Foundation' AND '$(GenerateIndividualPackages)' != 'true'">false</GeneratePackageOnBuild>
 ```
 
 ### Default Behavior
@@ -85,4 +85,4 @@ All packages use centralized version management via:
 
 ## Recommendation
 
-**Use the consolidated package (`IdevsWork.Foundation`)** unless you have specific requirements for individual components. This provides the best developer experience with simplified dependency management and guaranteed compatibility.
+**Use the consolidated package (`Idevs.Foundation`)** unless you have specific requirements for individual components. This provides the best developer experience with simplified dependency management and guaranteed compatibility.

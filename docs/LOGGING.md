@@ -1,4 +1,4 @@
-# IdevsWork Foundation - Logging
+# Idevs Foundation - Logging
 
 The Foundation framework provides comprehensive logging support through the `ILogManager` interface and static `Log` class, making it easy to get loggers throughout your application.
 
@@ -311,7 +311,7 @@ public class ServiceTests
       "Default": "Information",
       "Microsoft": "Warning",
       "Microsoft.Hosting.Lifetime": "Information",
-      "IdevsWork.Foundation": "Debug"
+      "Idevs.Foundation": "Debug"
     }
   }
 }

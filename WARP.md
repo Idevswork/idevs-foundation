@@ -4,18 +4,18 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 
 ## Repository Overview
 
-**IdevsWork.Foundation** is a comprehensive .NET 8.0 foundation framework that provides essential building blocks for modern applications with CQRS patterns, Entity Framework integration, centralized logging, and dependency injection abstractions.
+**Idevs.Foundation** is a comprehensive .NET 8.0 foundation framework that provides essential building blocks for modern applications with CQRS patterns, Entity Framework integration, centralized logging, and dependency injection abstractions.
 
 ### Core Architecture
 
 The framework follows a layered, modular architecture with the following key components:
 
 #### **Foundation Layers:**
-- **Abstractions Layer** (`IdevsWork.Foundation.Abstractions`) - Core interfaces and contracts
-- **Entity Framework Layer** (`IdevsWork.Foundation.EntityFramework`) - EF Core implementations with audit trails and soft deletion
-- **CQRS Layer** (`IdevsWork.Foundation.Cqrs`) - Command Query Responsibility Segregation patterns
-- **Mediator Layer** (`IdevsWork.Foundation.Mediator`) - Mediator pattern implementation
-- **Services Layer** (`IdevsWork.Foundation.Services`) - Generic service implementations with CQRS support
+- **Abstractions Layer** (`Idevs.Foundation.Abstractions`) - Core interfaces and contracts
+- **Entity Framework Layer** (`Idevs.Foundation.EntityFramework`) - EF Core implementations with audit trails and soft deletion
+- **CQRS Layer** (`Idevs.Foundation.Cqrs`) - Command Query Responsibility Segregation patterns
+- **Mediator Layer** (`Idevs.Foundation.Mediator`) - Mediator pattern implementation
+- **Services Layer** (`Idevs.Foundation.Services`) - Generic service implementations with CQRS support
 - **Infrastructure Layers** - Autofac DI integration, Serilog logging integration
 
 #### **Key Patterns:**
@@ -30,7 +30,7 @@ The framework follows a layered, modular architecture with the following key com
 
 ```bash
 # Build entire solution
-dotnet build IdevsWork.Foundation.sln
+dotnet build Idevs.Foundation.sln
 
 # Build with specific configuration
 dotnet build --configuration Release
@@ -73,14 +73,14 @@ dotnet test
 dotnet test --collect:"XPlat Code Coverage"
 
 # Run specific test project
-dotnet test tests/IdevsWork.Foundation.Tests/IdevsWork.Foundation.Tests.csproj
+dotnet test tests/Idevs.Foundation.Tests/Idevs.Foundation.Tests.csproj
 ```
 
 ### Package Management
 
 ```bash
 # Pack consolidated package
-dotnet pack src/IdevsWork.Foundation/IdevsWork.Foundation.csproj --configuration Release
+dotnet pack src/Idevs.Foundation/Idevs.Foundation.csproj --configuration Release
 
 # Pack individual packages
 dotnet build --configuration Release -p:GenerateIndividualPackages=true
@@ -131,7 +131,7 @@ Use `services.AddFoundationLoggingWithStaticAccess()` for full logging capabilit
 ### Packaging Strategy
 
 The framework supports **dual packaging**:
-- **Consolidated Package** (`IdevsWork.Foundation`) - Single package containing all components
+- **Consolidated Package** (`Idevs.Foundation`) - Single package containing all components
 - **Individual Packages** - Granular packages for specific functionality
 
 Package generation is controlled by MSBuild properties in `Directory.Build.props`:

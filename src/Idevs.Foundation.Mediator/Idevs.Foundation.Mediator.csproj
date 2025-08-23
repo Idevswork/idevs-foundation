@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Idevs.Foundation.Mediator</PackageId>
+    <Title>Idevs Foundation Mediator</Title>
+    <Description>Mediator pattern implementation for Idevs Foundation with CQRS support</Description>
+    <PackageTags>mediator;cqrs;command;query;handler;pipeline;behavior</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Idevs.Foundation.Cqrs/Idevs.Foundation.Cqrs.csproj" />
+  </ItemGroup>
+
+</Project>

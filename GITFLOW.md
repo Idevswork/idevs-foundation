@@ -1,6 +1,6 @@
 # GitFlow Quick Reference
 
-This document provides quick commands for managing branches in the IdevsWork.Foundation repository using GitFlow methodology.
+This document provides quick commands for managing branches in the Idevs.Foundation repository using GitFlow methodology.
 
 ## Branch Structure
 

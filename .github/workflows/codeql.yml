@@ -38,10 +38,10 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore IdevsWork.Foundation.sln
+      run: dotnet restore Idevs.Foundation.sln
 
     - name: Build solution
-      run: dotnet build IdevsWork.Foundation.sln --configuration Release --no-restore
+      run: dotnet build Idevs.Foundation.sln --configuration Release --no-restore
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
