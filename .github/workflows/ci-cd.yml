@@ -122,7 +122,7 @@ jobs:
         fi
         
         echo "assemblySemVer=$VERSION" >> $GITHUB_OUTPUT
-        echo "nuGetVersionV2=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+        echo "nuGetVersion=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
         echo "assemblySemFileVer=$VERSION.0" >> $GITHUB_OUTPUT
         
         echo "Using fallback version: $PACKAGE_VERSION"
@@ -136,12 +136,12 @@ jobs:
         if [[ "${{ steps.version.outcome }}" == "success" ]]; then
           # GitVersion succeeded, use its outputs (with fallbacks for empty values)
           VERSION="${{ steps.version.outputs.assemblySemVer }}"
-          PACKAGE_VERSION="${{ steps.version.outputs.nuGetVersionV2 || steps.version.outputs.fullSemVer || steps.version.outputs.semVer }}"
+          PACKAGE_VERSION="${{ steps.version.outputs.nuGetVersion || steps.version.outputs.fullSemVer || steps.version.outputs.semVer }}"
           FILE_VERSION="${{ steps.version.outputs.assemblySemFileVer }}"
         else
           # Use fallback versions
           VERSION="${{ steps.fallback-version.outputs.assemblySemVer }}"
-          PACKAGE_VERSION="${{ steps.fallback-version.outputs.nuGetVersionV2 }}"
+          PACKAGE_VERSION="${{ steps.fallback-version.outputs.nuGetVersion }}"
           FILE_VERSION="${{ steps.fallback-version.outputs.assemblySemFileVer }}"
         fi
         
@@ -165,7 +165,7 @@ jobs:
       run: |
         # Use GitVersion outputs if available, otherwise use fallback
         VERSION="${{ steps.version.outputs.assemblySemVer || steps.fallback-version.outputs.assemblySemVer }}"
-        PACKAGE_VERSION="${{ steps.version.outputs.nuGetVersionV2 || steps.fallback-version.outputs.nuGetVersionV2 }}"
+        PACKAGE_VERSION="${{ steps.version.outputs.fullSemVer || steps.fallback-version.outputs.nuGetVersion }}"
         FILE_VERSION="${{ steps.version.outputs.assemblySemFileVer || steps.fallback-version.outputs.assemblySemFileVer }}"
         
         echo "Using versions: $VERSION | $PACKAGE_VERSION | $FILE_VERSION"
