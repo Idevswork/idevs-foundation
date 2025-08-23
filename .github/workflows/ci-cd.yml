@@ -97,7 +97,7 @@ jobs:
       id: version
       uses: gittools/actions/gitversion/execute@v4
       with:
-        useConfigFile: true
+        configFilePath: 'GitVersion.yml'
     
     - name: Restore dependencies
       run: dotnet restore Idevs.Foundation.sln

@@ -8,7 +8,7 @@ no-bump-message: '\+semver:\s?(none|skip)'
 branches:
   main:
     mode: ContinuousDelivery
-    tag: ''
+    label: ''
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
@@ -17,7 +17,7 @@ branches:
 
   develop:
     mode: ContinuousDeployment
-    tag: 'alpha'
+    label: 'alpha'
     increment: Minor
     prevent-increment-of-merged-branch-version: false
     track-merge-target: true
@@ -26,7 +26,7 @@ branches:
 
   release:
     mode: ContinuousDelivery
-    tag: 'beta'
+    label: 'beta'
     increment: None
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
@@ -35,7 +35,7 @@ branches:
 
   feature:
     mode: ContinuousDeployment
-    tag: 'alpha'
+    label: 'alpha'
     increment: Inherit
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false
@@ -44,7 +44,7 @@ branches:
 
   pull-request:
     mode: ContinuousDeployment
-    tag: 'pr'
+    label: 'pr'
     increment: Inherit
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false
@@ -53,7 +53,7 @@ branches:
 
   hotfix:
     mode: ContinuousDeployment
-    tag: 'beta'
+    label: 'beta'
     increment: Patch
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false
