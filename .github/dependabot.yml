@@ -37,6 +37,16 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "Microsoft.Extensions.*"
         update-types: ["version-update:semver-major"]
+      # Ignore .NET 9.0 packages while we're on .NET 8.0
+      - dependency-name: "*"
+        versions: ["9.*"]
+      # Ignore specific .NET 9.0 packages
+      - dependency-name: "Microsoft.Extensions.Configuration.Abstractions"
+        versions: ["9.0.0", "9.0.*"]
+      - dependency-name: "Microsoft.Extensions.Hosting.Abstractions"
+        versions: ["9.0.0", "9.0.*"]
+      - dependency-name: "Serilog*"
+        versions: ["4.*"] # Serilog v4 might require .NET 9.0
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"

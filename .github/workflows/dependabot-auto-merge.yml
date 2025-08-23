@@ -1,0 +1,125 @@
+name: Dependabot Auto-Merge
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    
+    steps:
+      - name: Check if PR can be auto-merged
+        id: check-pr
+        run: |
+          # Get PR details
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          
+          echo "PR Title: $PR_TITLE"
+          
+          # Define auto-merge conditions
+          AUTO_MERGE=false
+          
+          # Auto-merge GitHub Actions updates
+          if [[ "$PR_TITLE" == *"ci(deps): bump"* ]]; then
+            echo "✅ GitHub Actions update detected"
+            AUTO_MERGE=true
+          fi
+          
+          # Auto-merge patch and minor updates for specific packages
+          if [[ "$PR_TITLE" == *"deps: Bump the"* ]] && [[ ! "$PR_TITLE" == *"major"* ]]; then
+            echo "✅ NuGet package group update detected (non-major)"
+            AUTO_MERGE=true
+          fi
+          
+          # Don't auto-merge if it contains major version updates
+          if [[ "$PR_TITLE" == *"major"* ]]; then
+            echo "❌ Major version update detected - requires manual review"
+            AUTO_MERGE=false
+          fi
+          
+          echo "auto_merge=$AUTO_MERGE" >> $GITHUB_OUTPUT
+
+      - name: Wait for CI checks
+        if: steps.check-pr.outputs.auto_merge == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo, number } = context.issue;
+            
+            // Wait up to 10 minutes for checks to complete
+            const maxWaitTime = 10 * 60 * 1000; // 10 minutes
+            const startTime = Date.now();
+            
+            while (Date.now() - startTime < maxWaitTime) {
+              const { data: pr } = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number: number,
+              });
+              
+              const { data: checks } = await github.rest.checks.listForRef({
+                owner,
+                repo,
+                ref: pr.head.sha,
+              });
+              
+              const requiredChecks = checks.check_runs.filter(check => 
+                check.name.includes('Build and Test') || 
+                check.name.includes('CodeQL')
+              );
+              
+              const allComplete = requiredChecks.every(check => 
+                check.status === 'completed'
+              );
+              
+              const allPassed = requiredChecks.every(check => 
+                check.conclusion === 'success' || 
+                check.conclusion === 'skipped'
+              );
+              
+              console.log(`Checks status: ${requiredChecks.length} required checks found`);
+              console.log(`All complete: ${allComplete}, All passed: ${allPassed}`);
+              
+              if (allComplete) {
+                if (allPassed) {
+                  console.log('✅ All required checks passed');
+                  return;
+                } else {
+                  console.log('❌ Some checks failed - cannot auto-merge');
+                  process.exit(1);
+                }
+              }
+              
+              console.log('⏳ Waiting for checks to complete...');
+              await new Promise(resolve => setTimeout(resolve, 30000)); // Wait 30 seconds
+            }
+            
+            console.log('❌ Timeout waiting for checks - cannot auto-merge');
+            process.exit(1);
+
+      - name: Enable auto-merge
+        if: steps.check-pr.outputs.auto_merge == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr merge ${{ github.event.pull_request.number }} \
+            --merge \
+            --delete-branch \
+            --repo ${{ github.repository }}
+
+      - name: Comment on PR if not auto-merged
+        if: steps.check-pr.outputs.auto_merge == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --body "🤖 This Dependabot PR requires manual review due to:\n- Major version updates\n- Security-sensitive changes\n- Complex dependency changes\n\nPlease review and merge manually if appropriate." \
+            --repo ${{ github.repository }}
