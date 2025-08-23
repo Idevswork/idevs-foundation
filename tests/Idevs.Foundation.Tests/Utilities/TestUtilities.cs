@@ -198,26 +198,33 @@ public static class TestServiceFactory
     {
         var context = CreateTestDbContext();
 
-        // Add additional test data
+        // Add additional test data without JSON metadata first
         var products = new List<TestProduct>
         {
             new() 
             { 
                 Name = "Seeded Product 1", 
                 Price = 29.99m, 
-                Category = "Software",
-                Metadata = JsonNode.Parse("""{"tags": ["popular", "new"], "rating": 4.5}""")?.AsObject()
+                Category = "Software"
             },
             new() 
             { 
                 Name = "Seeded Product 2", 
                 Price = 49.99m, 
-                Category = "Hardware",
-                Metadata = JsonNode.Parse("""{"tags": ["premium"], "rating": 4.8}""")?.AsObject()
+                Category = "Hardware"
             }
         };
 
         context.Products.AddRange(products);
+        await context.SaveChangesAsync();
+
+        // Update with JSON metadata after initial save to avoid conversion issues
+        var product1 = products[0];
+        var product2 = products[1];
+
+        product1.Metadata = JsonNode.Parse("""{"tags": ["popular", "new"], "rating": 4.5}""")?.AsObject();
+        product2.Metadata = JsonNode.Parse("""{"tags": ["premium"], "rating": 4.8}""")?.AsObject();
+
         await context.SaveChangesAsync();
 
         return context;

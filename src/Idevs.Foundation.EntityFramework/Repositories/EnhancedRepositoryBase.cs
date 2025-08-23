@@ -284,22 +284,32 @@ public abstract class EnhancedRepositoryBase<T, TId> : RepositoryBase<T, TId>
             .ToListAsync(cancellationToken);
     }
 
-    private async Task<object?> ExecuteInMemoryJsonQueryAsync(
+    private Task<object?> ExecuteInMemoryJsonQueryAsync(
         Expression<Func<T, JsonObject?>> jsonPredicate,
         string key,
         string value,
         bool single,
         CancellationToken cancellationToken)
     {
-        var jsonColumnName = GetJsonColumnName(jsonPredicate);
-        
-        // Use simple string contains for In-Memory provider (JSON is stored as string)
+        // For In-Memory provider, we need to work with the JsonObject directly
+        // and then convert to string for comparison
         var query = QueryNoTracking()
-            .Where(entity => EF.Property<string>(entity, jsonColumnName).Contains($"\"{key}\":\"{value}\""));
+            .AsEnumerable() // Switch to client-side evaluation
+            .Where(entity =>
+            {
+                var jsonObj = jsonPredicate.Compile()(entity);
+                if (jsonObj == null) return false;
 
-        return single 
-            ? (object?)await query.FirstOrDefaultAsync(cancellationToken) 
-            : (object)await query.ToListAsync(cancellationToken);
+                var jsonString = jsonObj.ToJsonString();
+                return jsonString.Contains($"\"{key}\":\"{value}\"");
+            })
+            .AsQueryable(); // Convert back to IQueryable for consistency
+
+        return Task.FromResult(
+            single
+                ? (object?)query.FirstOrDefault()
+                : (object)query.ToList()
+        );
     }
 
     #endregion
