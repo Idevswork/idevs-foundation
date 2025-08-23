@@ -55,6 +55,36 @@ public interface IRepositoryBase<T, in TId> : IUnitOfWork
 
     #endregion
 
+    #region GraphQL Query Methods
+
+    /// <summary>
+    /// Executes a GraphQL query and returns entities.
+    /// </summary>
+    /// <param name="graphqlQuery">The GraphQL query string.</param>
+    /// <param name="variables">Variables for the GraphQL query.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>List of entities matching the GraphQL query.</returns>
+    Task<List<T>> ExecuteGraphQlQueryAsync(
+        string graphqlQuery,
+        Dictionary<string, object>? variables = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Executes a GraphQL query with JSON field filtering.
+    /// </summary>
+    /// <param name="graphqlQuery">The GraphQL query string.</param>
+    /// <param name="jsonPredicate">Expression to select JSON field.</param>
+    /// <param name="variables">Variables for the GraphQL query.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>List of entities matching the GraphQL query with JSON filtering.</returns>
+    Task<List<T>> ExecuteGraphQlWithJsonQueryAsync(
+        string graphqlQuery,
+        Expression<Func<T, JsonObject?>> jsonPredicate,
+        Dictionary<string, object>? variables = null,
+        CancellationToken cancellationToken = default);
+
+    #endregion
+
     #region JSON Query Methods
 
     /// <summary>

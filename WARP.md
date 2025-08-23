@@ -74,6 +74,15 @@ dotnet test --collect:"XPlat Code Coverage"
 
 # Run specific test project
 dotnet test tests/Idevs.Foundation.Tests/Idevs.Foundation.Tests.csproj
+
+# Run tests with detailed output
+dotnet test --verbosity normal
+
+# Run tests for a specific class
+dotnet test --filter "FullyQualifiedName~LogManagerTests"
+
+# Run tests with live coverage (watch mode)
+dotnet watch test --project tests/Idevs.Foundation.Tests/
 ```
 
 ### Package Management
@@ -90,6 +99,64 @@ rm -rf artifacts/*.nupkg
 
 # List generated packages
 ls -la artifacts/*.nupkg
+
+# Inspect package contents
+unzip -l artifacts/Idevs.Foundation.*.nupkg | grep "\.dll"
+```
+
+### GitFlow Commands
+
+The repository includes GitFlow helper scripts for structured branch management:
+
+```bash
+# Feature branches
+./scripts/gitflow.sh feature start user-authentication
+./scripts/gitflow.sh feature finish user-authentication
+
+# Release branches
+./scripts/gitflow.sh release start 1.2.0
+./scripts/gitflow.sh release finish 1.2.0
+
+# Hotfix branches  
+./scripts/gitflow.sh hotfix start 1.2.1
+./scripts/gitflow.sh hotfix finish 1.2.1
+
+# Check status and branches
+./scripts/gitflow.sh status
+
+# Setup Git aliases (one-time setup)
+./scripts/setup-git-aliases.sh
+
+# Use Git aliases after setup
+git feature-start user-authentication
+git feature-finish user-authentication
+git release-start 1.2.0
+git sync  # Sync main and develop branches
+```
+
+### Development Debugging Commands
+
+```bash
+# Watch for file changes and rebuild
+dotnet watch build
+
+# Check for outdated packages
+dotnet list package --outdated
+
+# Analyze package dependencies
+dotnet list package --include-transitive
+
+# Format code
+dotnet format
+
+# Analyze code quality
+dotnet build --verbosity diagnostic 2>&1 | grep -i warning
+
+# Check project references
+dotnet list reference
+
+# Clean solution thoroughly
+dotnet clean && rm -rf */bin */obj artifacts/*
 ```
 
 ## Development Workflow
