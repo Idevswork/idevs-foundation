@@ -100,16 +100,6 @@ jobs:
       with:
         configFilePath: 'GitVersion.yml'
     
-    - name: Debug GitVersion outputs
-      run: |
-        echo "GitVersion step outcome: ${{ steps.version.outcome }}"
-        echo "Available outputs:"
-        echo "- assemblySemVer: '${{ steps.version.outputs.assemblySemVer }}'"
-        echo "- nuGetVersionV2: '${{ steps.version.outputs.nuGetVersionV2 }}'"
-        echo "- assemblySemFileVer: '${{ steps.version.outputs.assemblySemFileVer }}'"
-        echo "- semVer: '${{ steps.version.outputs.semVer }}'"
-        echo "- nuGetVersion: '${{ steps.version.outputs.nuGetVersion }}'"
-        echo "- fullSemVer: '${{ steps.version.outputs.fullSemVer }}'"
     
     - name: Set Fallback Version
       id: fallback-version
