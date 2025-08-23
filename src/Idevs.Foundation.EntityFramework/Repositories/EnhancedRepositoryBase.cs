@@ -53,6 +53,7 @@ public abstract class EnhancedRepositoryBase<T, TId> : RepositoryBase<T, TId>
             "SQL Server" => (T?)await ExecuteSqlServerJsonQueryAsync(jsonPredicate, key, value, single: true, cancellationToken),
             "MySQL" => (T?)await ExecuteMySqlJsonQueryAsync(jsonPredicate, key, value, single: true, cancellationToken),
             "SQLite" => (T?)await ExecuteSqliteJsonQueryAsync(jsonPredicate, key, value, single: true, cancellationToken),
+            "In-Memory" => (T?)await ExecuteInMemoryJsonQueryAsync(jsonPredicate, key, value, single: true, cancellationToken),
             _ => await base.FirstOrDefaultWithJsonQueryAsync(jsonPredicate, key, value, cancellationToken)
         };
     }
@@ -77,6 +78,7 @@ public abstract class EnhancedRepositoryBase<T, TId> : RepositoryBase<T, TId>
             "SQL Server" => await ExecuteSqlServerJsonQueryAsync(jsonPredicate, key, value, single: false, cancellationToken),
             "MySQL" => await ExecuteMySqlJsonQueryAsync(jsonPredicate, key, value, single: false, cancellationToken),
             "SQLite" => await ExecuteSqliteJsonQueryAsync(jsonPredicate, key, value, single: false, cancellationToken),
+            "In-Memory" => await ExecuteInMemoryJsonQueryAsync(jsonPredicate, key, value, single: false, cancellationToken),
             _ => await base.GetByCriteriaWithJsonQueryAsync(jsonPredicate, key, value, cancellationToken)
         };
 
@@ -282,6 +284,24 @@ public abstract class EnhancedRepositoryBase<T, TId> : RepositoryBase<T, TId>
             .ToListAsync(cancellationToken);
     }
 
+    private async Task<object?> ExecuteInMemoryJsonQueryAsync(
+        Expression<Func<T, JsonObject?>> jsonPredicate,
+        string key,
+        string value,
+        bool single,
+        CancellationToken cancellationToken)
+    {
+        var jsonColumnName = GetJsonColumnName(jsonPredicate);
+        
+        // Use simple string contains for In-Memory provider (JSON is stored as string)
+        var query = QueryNoTracking()
+            .Where(entity => EF.Property<string>(entity, jsonColumnName).Contains($"\"{key}\":\"{value}\""));
+
+        return single 
+            ? (object?)await query.FirstOrDefaultAsync(cancellationToken) 
+            : (object)await query.ToListAsync(cancellationToken);
+    }
+
     #endregion
 
     #region Helper Methods
@@ -345,13 +365,30 @@ public abstract class EnhancedRepositoryBase<T, TId> : RepositoryBase<T, TId>
 
     private IQueryable<T> ApplyFilter(IQueryable<T> query, QueryFilter filter)
     {
+        // Map common GraphQL field names to actual property names
+        var propertyName = MapGraphQLFieldToProperty(filter.Field);
+        
         return filter.Operator switch
         {
-            "eq" => query.Where(entity => EF.Property<string>(entity, filter.Field) == filter.Value),
-            "contains" => query.Where(entity => EF.Property<string>(entity, filter.Field).Contains(filter.Value)),
-            "startsWith" => query.Where(entity => EF.Property<string>(entity, filter.Field).StartsWith(filter.Value)),
-            "endsWith" => query.Where(entity => EF.Property<string>(entity, filter.Field).EndsWith(filter.Value)),
+            "eq" => query.Where(entity => EF.Property<string>(entity, propertyName) == filter.Value),
+            "contains" => query.Where(entity => EF.Property<string>(entity, propertyName).Contains(filter.Value)),
+            "startsWith" => query.Where(entity => EF.Property<string>(entity, propertyName).StartsWith(filter.Value)),
+            "endsWith" => query.Where(entity => EF.Property<string>(entity, propertyName).EndsWith(filter.Value)),
             _ => query
+        };
+    }
+    
+    private static string MapGraphQLFieldToProperty(string fieldName)
+    {
+        // Convert GraphQL camelCase field names to PascalCase property names
+        return fieldName switch
+        {
+            "name" => "Name",
+            "price" => "Price",
+            "category" => "Category",
+            "id" => "Id",
+            "isActive" => "IsActive",
+            _ => char.ToUpper(fieldName[0]) + fieldName[1..] // Convert first char to uppercase
         };
     }
 

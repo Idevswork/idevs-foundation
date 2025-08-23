@@ -51,6 +51,27 @@ public class TestDbContext : DbContext
     public DbSet<TestProduct> Products { get; set; }
     public DbSet<TestOrder> Orders { get; set; }
 
+    private static string? JsonObjectToString(JsonObject? jsonObject)
+    {
+        return jsonObject?.ToJsonString();
+    }
+
+    private static JsonObject? StringToJsonObject(string? jsonString)
+    {
+        if (string.IsNullOrEmpty(jsonString))
+            return null;
+
+        try
+        {
+            var node = JsonNode.Parse(jsonString);
+            return node?.AsObject();
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -71,9 +92,12 @@ public class TestDbContext : DbContext
             entity.Property(e => e.Price)
                   .HasPrecision(18, 2);
 
-            // JSON column configuration (works with InMemory for testing)
+            // JSON column configuration with value converter for InMemory compatibility
             entity.Property(e => e.Metadata)
-                  .IsRequired(false);
+                  .IsRequired(false)
+                  .HasConversion(
+                      v => JsonObjectToString(v),
+                      v => StringToJsonObject(v));
 
             // Soft delete index
             entity.HasIndex(e => e.IsDeleted)
