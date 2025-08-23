@@ -76,7 +76,7 @@ public abstract class RepositoryBase<T, TId> : IRepositoryBase<T, TId>
     /// <inheritdoc />
     public virtual async Task<List<T>> ListAsync(IEnumerable<TId>? ids, CancellationToken cancellationToken = default)
     {
-        var enumerable = ids?.ToArray() ?? Array.Empty<TId>();
+        var enumerable = ids?.ToArray() ?? [];
         if (enumerable.Length == 0)
         {
             return await QueryNoTracking().ToListAsync(cancellationToken);
@@ -109,6 +109,7 @@ public abstract class RepositoryBase<T, TId> : IRepositoryBase<T, TId>
 
     #region JSON Query Methods
 
+
     /// <inheritdoc />
     public virtual async Task<T?> FirstOrDefaultWithJsonQueryAsync(
         Expression<Func<T, JsonObject?>> jsonPredicate,
@@ -116,8 +117,9 @@ public abstract class RepositoryBase<T, TId> : IRepositoryBase<T, TId>
         string value,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogWarning("JSON query functionality not implemented in base class. Override in derived class with provider-specific implementation.");
-        return await Task.FromResult<T?>(null);
+        
+        await Task.CompletedTask; // Satisfy async contract
+        throw CreateJsonQueryNotSupportedException("FirstOrDefaultWithJsonQueryAsync");
     }
 
     /// <inheritdoc />
@@ -128,8 +130,9 @@ public abstract class RepositoryBase<T, TId> : IRepositoryBase<T, TId>
         string value,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogWarning("JSON query functionality not implemented in base class. Override in derived class with provider-specific implementation.");
-        return await Task.FromResult<T?>(null);
+        
+        await Task.CompletedTask; // Satisfy async contract
+        throw CreateJsonQueryNotSupportedException("FirstOrDefaultWithJsonQueryAsync");
     }
 
     /// <inheritdoc />
@@ -140,8 +143,9 @@ public abstract class RepositoryBase<T, TId> : IRepositoryBase<T, TId>
         string key,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogWarning("JSON query functionality not implemented in base class. Override in derived class with provider-specific implementation.");
-        return await Task.FromResult<T?>(null);
+        
+        await Task.CompletedTask; // Satisfy async contract
+        throw CreateJsonQueryNotSupportedException("FirstOrDefaultWithJsonQueryAsync");
     }
 
     /// <inheritdoc />
@@ -151,8 +155,9 @@ public abstract class RepositoryBase<T, TId> : IRepositoryBase<T, TId>
         string value,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogWarning("JSON query functionality not implemented in base class. Override in derived class with provider-specific implementation.");
-        return await Task.FromResult(new List<T>());
+        
+        await Task.CompletedTask; // Satisfy async contract
+        throw CreateJsonQueryNotSupportedException("GetByCriteriaWithJsonQueryAsync");
     }
 
     /// <inheritdoc />
@@ -163,8 +168,9 @@ public abstract class RepositoryBase<T, TId> : IRepositoryBase<T, TId>
         string value,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogWarning("JSON query functionality not implemented in base class. Override in derived class with provider-specific implementation.");
-        return await Task.FromResult(new List<T>());
+        
+        await Task.CompletedTask; // Satisfy async contract
+        throw CreateJsonQueryNotSupportedException("GetByCriteriaWithJsonQueryAsync");
     }
 
     /// <inheritdoc />
@@ -175,8 +181,53 @@ public abstract class RepositoryBase<T, TId> : IRepositoryBase<T, TId>
         string key,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogWarning("JSON query functionality not implemented in base class. Override in derived class with provider-specific implementation.");
-        return await Task.FromResult(new List<T>());
+        
+        await Task.CompletedTask; // Satisfy async contract
+        throw CreateJsonQueryNotSupportedException("GetByCriteriaWithJsonQueryAsync");
+    }
+
+    #endregion
+
+    #region GraphQL Query Methods
+
+    /// <inheritdoc />
+    public virtual async Task<List<T>> ExecuteGraphQlQueryAsync(
+        string graphqlQuery,
+        Dictionary<string, object>? variables = null,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            // Parse GraphQL query into filter conditions
+            var filters = ParseGraphQlFilters(graphqlQuery, variables);
+
+            var query = QueryNoTracking();
+
+            // Apply filters based on database provider capabilities
+            foreach (var filter in filters)
+            {
+                query = ApplyFilter(query, filter);
+            }
+
+            return await query.ToListAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            var dbProvider = DetectDatabaseProvider();
+            throw new NotSupportedException($"GraphQL query execution failed for {dbProvider}: {ex.Message}", ex);
+        }
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<List<T>> ExecuteGraphQlWithJsonQueryAsync(
+        string graphqlQuery,
+        Expression<Func<T, JsonObject?>> jsonPredicate,
+        Dictionary<string, object>? variables = null,
+        CancellationToken cancellationToken = default)
+    {
+        // Default implementation - can be overridden by enhanced repositories
+        await Task.CompletedTask; // Satisfy async contract
+        throw CreateGraphQlNotSupportedException("ExecuteGraphQlWithJsonQueryAsync");
     }
 
     #endregion
@@ -339,6 +390,163 @@ public abstract class RepositoryBase<T, TId> : IRepositoryBase<T, TId>
         {
             updatedLog.UpdatedAt = DateTimeOffset.UtcNow;
         }
+    }
+
+    /// <summary>
+    /// Creates a NotSupportedException with detailed guidance for implementing JSON query functionality.
+    /// </summary>
+    /// <param name="methodName">The name of the method that requires implementation.</param>
+    /// <returns>A NotSupportedException with helpful guidance.</returns>
+    private NotSupportedException CreateJsonQueryNotSupportedException(string methodName)
+    {
+        var dbProviderHint = DetectDatabaseProvider();
+        
+        var message = $"JSON query method '{methodName}' requires a database provider-specific implementation.\n\n" +
+                     $"To implement JSON queries:\n" +
+                     $"1. Override this method in your repository class\n" +
+                     $"2. Use provider-specific JSON functions (detected provider: {dbProviderHint})\n" +
+                     $"3. Implement the query logic for your database\n\n" +
+                     $"Common implementations:\n" +
+                     $"• PostgreSQL: Use JSONB operators and functions\n" +
+                     $"• SQL Server: Use JSON_VALUE, JSON_QUERY functions\n" +
+                     $"• SQLite: Use JSON functions (JSON_EXTRACT, etc.)\n\n" +
+                     $"For examples and documentation, see: https://github.com/Idevswork/idevs-foundation/docs/JsonQueries.md";
+
+        _logger.LogError("JSON query operation '{MethodName}' was called but not implemented. " +
+                        "Database provider detected: {DbProvider}. Repository type: {RepositoryType}",
+                        methodName, dbProviderHint, GetType().Name);
+
+        return new NotSupportedException(message);
+    }
+
+
+    /// <summary>
+    /// Attempts to detect the database provider being used.
+    /// </summary>
+    /// <returns>A string indicating the detected database provider or "Unknown".</returns>
+    protected string DetectDatabaseProvider()
+    {
+        try
+        {
+            var providerName = _dbContext.Database.ProviderName?.ToLowerInvariant();
+            return DatabaseProviders.Detect(providerName);
+        }
+        catch
+        {
+            return DatabaseProviders.UnknownProvider;
+        }
+    }
+
+    /// <summary>
+    /// Creates a NotSupportedException for GraphQL operations.
+    /// </summary>
+    /// <param name="methodName">The name of the method that requires implementation.</param>
+    /// <returns>A NotSupportedException with helpful guidance.</returns>
+    private NotSupportedException CreateGraphQlNotSupportedException(string methodName)
+    {
+        var dbProviderHint = DetectDatabaseProvider();
+        
+        var message = $"GraphQL method '{methodName}' requires a database provider that supports GraphQL integration.\n\n" +
+                     $"To enable GraphQL support:\n" +
+                     $"1. Install the appropriate GraphQL package for {dbProviderHint}\n" +
+                     $"2. Configure GraphQL schema and resolvers\n" +
+                     $"3. Override this method in your repository class\n\n" +
+                     $"Supported providers with GraphQL:\n" +
+                     $"• PostgreSQL: Use HotChocolate with Npgsql\n" +
+                     $"• SQL Server: Use HotChocolate with SqlClient\n" +
+                     $"• MySQL: Use HotChocolate with MySql.EntityFrameworkCore\n\n" +
+                     $"For documentation, see: https://github.com/Idevswork/idevs-foundation/docs/GraphQLQueries.md";
+
+        _logger.LogError("GraphQL operation '{MethodName}' was called but not implemented. " +
+                        "Database provider detected: {DbProvider}. Repository type: {RepositoryType}",
+                        methodName, dbProviderHint, GetType().Name);
+
+        return new NotSupportedException(message);
+    }
+
+    /// <summary>
+    /// Parses GraphQL query filters into QueryFilter objects.
+    /// </summary>
+    /// <param name="graphqlQuery">The GraphQL query string.</param>
+    /// <param name="variables">Variables for the GraphQL query.</param>
+    /// <returns>List of parsed query filters.</returns>
+    private List<QueryFilter> ParseGraphQlFilters(string graphqlQuery, Dictionary<string, object>? variables)
+    {
+        var filters = new List<QueryFilter>();
+
+        // Simple GraphQL parsing - in production, use a proper GraphQL parser
+        // Example: { users(where: { name: { eq: "John" } }) { id name } }
+
+        // Extract simple equality filters
+        var whereMatch = System.Text.RegularExpressions.Regex.Match(
+            graphqlQuery,
+            @"where:\s*\{\s*(\w+):\s*\{\s*(\w+):\s*""?([^""}\s]+)""?\s*\}\s*\}");
+
+        if (whereMatch.Success)
+        {
+            filters.Add(new QueryFilter
+            {
+                Field = whereMatch.Groups[1].Value,
+                Operator = whereMatch.Groups[2].Value,
+                Value = whereMatch.Groups[3].Value
+            });
+        }
+
+        return filters;
+    }
+
+    /// <summary>
+    /// Applies a query filter to the IQueryable.
+    /// </summary>
+    /// <param name="query">The query to apply the filter to.</param>
+    /// <param name="filter">The filter to apply.</param>
+    /// <returns>The filtered query.</returns>
+    private IQueryable<T> ApplyFilter(IQueryable<T> query, QueryFilter filter)
+    {
+        // Map common GraphQL field names to actual property names
+        var propertyName = MapGraphQlFieldToProperty(filter.Field);
+
+        return filter.Operator switch
+        {
+            "eq" => query.Where(entity => EF.Property<string>(entity, propertyName) == filter.Value),
+            "contains" => query.Where(entity => EF.Property<string>(entity, propertyName).Contains(filter.Value)),
+            "startsWith" => query.Where(entity => EF.Property<string>(entity, propertyName).StartsWith(filter.Value)),
+            "endsWith" => query.Where(entity => EF.Property<string>(entity, propertyName).EndsWith(filter.Value)),
+            _ => query
+        };
+    }
+
+    /// <summary>
+    /// Maps GraphQL field names to entity property names.
+    /// </summary>
+    /// <param name="fieldName">The GraphQL field name.</param>
+    /// <returns>The corresponding entity property name.</returns>
+    private static string MapGraphQlFieldToProperty(string fieldName)
+    {
+        // Convert GraphQL camelCase field names to PascalCase property names
+        return fieldName switch
+        {
+            "name" => "Name",
+            "price" => "Price",
+            "category" => "Category",
+            "id" => "Id",
+            "isActive" => "IsActive",
+            _ => char.ToUpper(fieldName[0]) + fieldName[1..] // Convert first char to uppercase
+        };
+    }
+
+    #endregion
+
+    #region Helper Classes
+
+    /// <summary>
+    /// Represents a filter condition parsed from a GraphQL query.
+    /// </summary>
+    private class QueryFilter
+    {
+        public string Field { get; set; } = string.Empty;
+        public string Operator { get; set; } = string.Empty;
+        public string Value { get; set; } = string.Empty;
     }
 
     #endregion
