@@ -13,8 +13,8 @@
     <Authors>Sarawut Phaekuntod</Authors>
     <Company>IdevsWork</Company>
     <Copyright>© 2025 IdevsWork. All rights reserved.</Copyright>
-    <PackageProjectUrl>https://github.com/Idevswork/IdevsWork.Foundation</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Idevswork/idevswork-foundation.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Idevswork/idevs-foundation</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Idevswork/idevs-foundation.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>

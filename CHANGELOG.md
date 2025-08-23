@@ -103,5 +103,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **[1.0.0]** - Initial stable release with complete Foundation framework
 - **[Unreleased]** - Current development version
 
-[unreleased]: https://github.com/your-org/IdevsWork.Foundation/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/your-org/IdevsWork.Foundation/releases/tag/v1.0.0
+[unreleased]: https://github.com/Idevswork/idevs-foundation/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/Idevswork/idevs-foundation/releases/tag/v1.0.0

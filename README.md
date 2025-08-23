@@ -3,7 +3,7 @@
 [![.NET](https://img.shields.io/badge/.NET-8.0-blue.svg)](https://dotnet.microsoft.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![NuGet](https://img.shields.io/badge/NuGet-Available-brightgreen.svg)](https://www.nuget.org/)
-[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://github.com/your-org/IdevsWork.Foundation)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://github.com/Idevswork/idevs-foundation)
 
 A comprehensive .NET foundation framework that provides essential building blocks for modern applications. Built with CQRS patterns, Entity Framework integration, centralized logging, and dependency injection abstractions.
 
