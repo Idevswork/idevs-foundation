@@ -4,11 +4,12 @@ commit-message-incrementing: Enabled
 
 branches:
   main:
-    mode: ContinuousDelivery
+    mode: ContinuousDeployment
     label: ''
     increment: Patch
     regex: ^main$
     is-release-branch: true
+    track-merge-target: false
 
   develop:
     mode: ContinuousDeployment
