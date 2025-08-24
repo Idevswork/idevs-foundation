@@ -1,5 +1,6 @@
 mode: ContinuousDelivery
 tag-prefix: 'v'
+commit-message-incrementing: Enabled
 
 branches:
   main:
@@ -7,33 +8,57 @@ branches:
     label: ''
     increment: Patch
     regex: ^main$
+    is-release-branch: true
 
   develop:
     mode: ContinuousDeployment
     label: 'alpha'
     increment: Minor
     regex: ^develop$
+    is-release-branch: false
+    pre-release-weight: 0
 
   release:
     mode: ContinuousDelivery
     label: 'beta'
     increment: None
     regex: ^releases?[/-]
+    is-release-branch: true
+    pre-release-weight: 30000
+
+  rc-sprint:
+    mode: ContinuousDeployment
+    label: 'rc'
+    increment: None
+    regex: ^rc-sprint[/-]
+    is-release-branch: false
+    pre-release-weight: 25000
+    source-branches: ['release']
 
   feature:
     mode: ContinuousDeployment
     label: 'alpha'
     increment: Inherit
     regex: ^features?[/-]
+    is-release-branch: false
+    pre-release-weight: 1000
 
   pull-request:
     mode: ContinuousDeployment
     label: 'pr'
     increment: Inherit
     regex: ^(pull|pull\-requests|pr)[/-]
+    is-release-branch: false
+    pre-release-weight: 2000
 
   hotfix:
     mode: ContinuousDeployment
     label: 'beta'
     increment: Patch
     regex: ^hotfix(es)?[/-]
+    is-release-branch: false
+    pre-release-weight: 40000
+    source-branches: ['main']
+
+ignore:
+  sha: []
