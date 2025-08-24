@@ -31,6 +31,7 @@
     <ProjectReference Include="..\..\src\Idevs.Foundation.Abstractions\Idevs.Foundation.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Idevs.Foundation.EntityFramework\Idevs.Foundation.EntityFramework.csproj" />
     <ProjectReference Include="..\..\src\Idevs.Foundation.Cqrs\Idevs.Foundation.Cqrs.csproj" />
+    <ProjectReference Include="..\..\src\Idevs.Foundation.Mediator\Idevs.Foundation.Mediator.csproj" />
     <ProjectReference Include="..\..\src\Idevs.Foundation.Services\Idevs.Foundation.Services.csproj" />
   </ItemGroup>
 
