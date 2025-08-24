@@ -118,6 +118,73 @@ start_release() {
     print_status "You can now prepare the release (update changelogs, version numbers, etc.)"
 }
 
+# Start a release candidate sprint branch
+start_rc_sprint() {
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        print_error "Please provide a version number and sprint identifier"
+        echo "Usage: $0 rc-sprint start <version> <sprint> (e.g., 1.2.0 rc1)"
+        exit 1
+    fi
+    
+    local version="$1"
+    local sprint="$2"
+    local release_name="release/$version"
+    local rc_sprint_name="rc-sprint/$version-$sprint"
+    sync_branches
+    
+    # Check if release branch exists
+    if ! git show-ref --verify --quiet refs/heads/$release_name; then
+        print_error "Release branch '$release_name' does not exist. Please start the release first."
+        echo "Run: $0 release start $version"
+        exit 1
+    fi
+    
+    print_status "Starting release candidate sprint: $rc_sprint_name from $release_name"
+    git checkout "$release_name"
+    git pull origin "$release_name"
+    git checkout -b "$rc_sprint_name"
+    git push -u origin "$rc_sprint_name"
+    
+    print_success "RC Sprint branch '$rc_sprint_name' created and pushed to remote"
+    print_status "You can now work on release candidate fixes and improvements"
+    print_status "When ready, use 'finish' to merge back to the release branch"
+}
+
+# Finish a release candidate sprint branch
+finish_rc_sprint() {
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        print_error "Please provide a version number and sprint identifier"
+        echo "Usage: $0 rc-sprint finish <version> <sprint>"
+        exit 1
+    fi
+    
+    local version="$1"
+    local sprint="$2"
+    local release_name="release/$version"
+    local rc_sprint_name="rc-sprint/$version-$sprint"
+    sync_branches
+    
+    print_status "Finishing RC Sprint: $rc_sprint_name"
+    
+    # Switch to rc-sprint branch and push latest changes
+    git checkout "$rc_sprint_name"
+    git push origin "$rc_sprint_name"
+    
+    # Merge back to release branch
+    git checkout "$release_name"
+    git pull origin "$release_name"
+    git merge --no-ff "$rc_sprint_name" -m "feat: integrate RC Sprint $sprint changes for version $version"
+    git push origin "$release_name"
+    
+    # Delete rc-sprint branch
+    git branch -d "$rc_sprint_name"
+    git push origin --delete "$rc_sprint_name"
+    
+    print_success "RC Sprint $sprint for version $version completed and merged to release branch"
+    print_status "Release branch '$release_name' is now updated with RC Sprint changes"
+    print_status "You can start another RC Sprint or finish the release when ready"
+}
+
 # Finish a release branch
 finish_release() {
     if [ -z "$1" ]; then
@@ -232,19 +299,23 @@ show_help() {
     echo "Usage: $0 <command> [options]"
     echo ""
     echo "Commands:"
-    echo "  feature start <name>     Start a new feature branch"
-    echo "  feature finish <name>    Finish a feature branch (creates PR)"
-    echo "  release start <version>  Start a new release branch"
-    echo "  release finish <version> Finish a release branch and create tag"
-    echo "  hotfix start <version>   Start a new hotfix branch"
-    echo "  hotfix finish <version>  Finish a hotfix branch and create tag"
-    echo "  status                   Show current git status and branches"
-    echo "  help                     Show this help message"
+    echo "  feature start <name>        Start a new feature branch"
+    echo "  feature finish <name>       Finish a feature branch (creates PR)"
+    echo "  release start <version>     Start a new release branch"
+    echo "  release finish <version>    Finish a release branch and create tag"
+    echo "  rc-sprint start <ver> <id>  Start a release candidate sprint branch"
+    echo "  rc-sprint finish <ver> <id> Finish a release candidate sprint branch"
+    echo "  hotfix start <version>      Start a new hotfix branch"
+    echo "  hotfix finish <version>     Finish a hotfix branch and create tag"
+    echo "  status                      Show current git status and branches"
+    echo "  help                        Show this help message"
     echo ""
     echo "Examples:"
     echo "  $0 feature start user-authentication"
     echo "  $0 feature finish user-authentication"
     echo "  $0 release start 1.2.0"
+    echo "  $0 rc-sprint start 1.2.0 rc1"
+    echo "  $0 rc-sprint finish 1.2.0 rc1"
     echo "  $0 release finish 1.2.0"
     echo "  $0 hotfix start 1.2.1"
     echo "  $0 hotfix finish 1.2.1"
@@ -272,6 +343,13 @@ case "$1" in
             "start") start_release "$3" ;;
             "finish") finish_release "$3" ;;
             *) echo "Usage: $0 release [start|finish] <version>"; exit 1 ;;
+        esac
+        ;;
+    "rc-sprint")
+        case "$2" in
+            "start") start_rc_sprint "$3" "$4" ;;
+            "finish") finish_rc_sprint "$3" "$4" ;;
+            *) echo "Usage: $0 rc-sprint [start|finish] <version> <sprint>"; exit 1 ;;
         esac
         ;;
     "hotfix")

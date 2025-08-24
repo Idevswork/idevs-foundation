@@ -117,6 +117,12 @@ The repository includes GitFlow helper scripts for structured branch management:
 ./scripts/gitflow.sh release start 1.2.0
 ./scripts/gitflow.sh release finish 1.2.0
 
+# Release candidate sprint branches (for iterative release testing)
+./scripts/gitflow.sh rc-sprint start 1.2.0 rc1
+./scripts/gitflow.sh rc-sprint finish 1.2.0 rc1
+./scripts/gitflow.sh rc-sprint start 1.2.0 rc2
+./scripts/gitflow.sh rc-sprint finish 1.2.0 rc2
+
 # Hotfix branches  
 ./scripts/gitflow.sh hotfix start 1.2.1
 ./scripts/gitflow.sh hotfix finish 1.2.1
@@ -131,6 +137,8 @@ The repository includes GitFlow helper scripts for structured branch management:
 git feature-start user-authentication
 git feature-finish user-authentication
 git release-start 1.2.0
+git rc-sprint-start 1.2.0 rc1
+git rc-sprint-finish 1.2.0 rc1
 git sync  # Sync main and develop branches
 ```
 
@@ -315,7 +323,69 @@ The repository includes a comprehensive GitHub Actions CI/CD pipeline:
 - `develop` - Development integration (publishes preview packages)
 - `feature/*` - Feature development branches
 - `release/*` - Release preparation branches
+- `rc-sprint/*` - Release candidate sprint branches (for iterative release testing)
 - `hotfix/*` - Emergency fixes
+
+### Release Candidate Sprint Workflow
+
+The **RC Sprint** (Release Candidate Sprint) workflow provides an iterative approach to release preparation, allowing for multiple rounds of testing, feedback, and improvements before the final release.
+
+#### When to Use RC Sprints
+
+- **Complex Releases**: When a release contains significant changes that require thorough testing
+- **Team Collaboration**: When multiple team members need to contribute fixes and improvements to a release
+- **Stakeholder Review**: When external stakeholders need to review and provide feedback on release candidates
+- **Quality Assurance**: When you want to implement multiple cycles of testing and refinement
+
+#### RC Sprint Process
+
+1. **Start Release Branch**: Create the initial release branch from develop
+   ```bash
+   ./scripts/gitflow.sh release start 1.2.0
+   ```
+
+2. **Start RC Sprint**: Create a sprint branch for focused work on release candidates
+   ```bash
+   ./scripts/gitflow.sh rc-sprint start 1.2.0 rc1
+   ```
+
+3. **Work on RC Sprint**: Make fixes, improvements, and adjustments on the RC Sprint branch
+   - Bug fixes discovered during testing
+   - Performance improvements
+   - Documentation updates
+   - Configuration adjustments
+
+4. **Finish RC Sprint**: Merge the RC Sprint back to the release branch
+   ```bash
+   ./scripts/gitflow.sh rc-sprint finish 1.2.0 rc1
+   ```
+
+5. **Repeat as Needed**: Create additional RC Sprints for further iterations
+   ```bash
+   ./scripts/gitflow.sh rc-sprint start 1.2.0 rc2
+   ./scripts/gitflow.sh rc-sprint finish 1.2.0 rc2
+   ```
+
+6. **Final Release**: When satisfied with the release quality, finish the release
+   ```bash
+   ./scripts/gitflow.sh release finish 1.2.0
+   ```
+
+#### Benefits of RC Sprint Workflow
+
+- **Parallel Work**: Multiple team members can work on different aspects simultaneously
+- **Controlled Integration**: Changes are integrated incrementally rather than all at once
+- **Quality Gates**: Each sprint completion serves as a quality checkpoint
+- **Flexibility**: Allows for course corrections without disrupting the main release timeline
+- **Documentation**: Clear history of what changes were made in each iteration
+
+#### RC Sprint Best Practices
+
+- **Clear Naming**: Use descriptive sprint identifiers (rc1, rc2, beta1, alpha2, etc.)
+- **Focused Scope**: Keep each RC Sprint focused on specific goals or issue categories
+- **Regular Integration**: Finish RC Sprints frequently to avoid merge conflicts
+- **Testing Between Sprints**: Test after each RC Sprint completion before starting the next
+- **Communication**: Document what each RC Sprint addresses for team visibility
 
 ### Semantic Versioning
 

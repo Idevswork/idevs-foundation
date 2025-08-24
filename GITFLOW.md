@@ -66,6 +66,14 @@ GitFlow is a branching model that defines a strict branching structure designed 
 - **No New Features**: Only bug fixes and release preparation allowed
 - **Final Testing**: QA testing, integration testing, performance testing
 
+#### **`rc-sprint/*` Branches**
+- **Purpose**: Iterative release candidate development and testing
+- **Naming**: `rc-sprint/version-sprint` (e.g., `rc-sprint/1.2.0-rc1`)
+- **Source**: Created from release branches, merged back to release branch
+- **Use Cases**: Complex releases requiring multiple testing cycles
+- **Activities**: Bug fixes, performance improvements, stakeholder feedback integration
+- **Benefits**: Parallel work, controlled integration, quality gates
+
 #### **`hotfix/*` Branches**
 - **Purpose**: Quickly fix critical issues in production
 - **Naming**: `hotfix/version` (e.g., `hotfix/1.2.1`)
@@ -106,6 +114,8 @@ This creates the following aliases:
 - `git feature-finish <name>` - Finish a feature branch
 - `git release-start <version>` - Start a release branch
 - `git release-finish <version>` - Complete a release
+- `git rc-sprint-start <version> <sprint>` - Start a release candidate sprint branch
+- `git rc-sprint-finish <version> <sprint>` - Finish a release candidate sprint branch
 - `git hotfix-start <version>` - Start a hotfix
 - `git hotfix-finish <version>` - Complete a hotfix
 - `git sync` - Sync main and develop branches
@@ -613,6 +623,8 @@ For more advanced operations, use the GitFlow helper script:
 ./scripts/gitflow.sh feature start user-authentication
 ./scripts/gitflow.sh feature finish user-authentication
 ./scripts/gitflow.sh release start 1.2.0
+./scripts/gitflow.sh rc-sprint start 1.2.0 rc1
+./scripts/gitflow.sh rc-sprint finish 1.2.0 rc1
 ./scripts/gitflow.sh release finish 1.2.0
 ./scripts/gitflow.sh hotfix start 1.2.1
 ./scripts/gitflow.sh hotfix finish 1.2.1
