@@ -150,7 +150,34 @@ jobs:
         PACKAGE_VERSION=${PACKAGE_VERSION:-"$VERSION"}
         FILE_VERSION=${FILE_VERSION:-"$VERSION.0"}
         
+        # Validate semantic versioning format
+        if ! echo "$PACKAGE_VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$'; then
+          echo "Invalid package version format: $PACKAGE_VERSION"
+          echo "Fixing version format..."
+          
+          # Extract base version and fix pre-release format
+          BASE_VERSION=$(echo "$PACKAGE_VERSION" | sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+          PRE_RELEASE=$(echo "$PACKAGE_VERSION" | sed -E 's/^[0-9]+\.[0-9]+\.[0-9]+[.-]?(.*)$/\1/')
+          
+          if [[ -n "$PRE_RELEASE" && "$PRE_RELEASE" != "$PACKAGE_VERSION" ]]; then
+            # Fix common invalid formats
+            if [[ "$PRE_RELEASE" =~ ^[0-9]+$ ]]; then
+              PRE_RELEASE="beta.$PRE_RELEASE"
+            elif [[ "$PRE_RELEASE" =~ ^([a-zA-Z]+)([0-9]+)$ ]]; then
+              PRE_RELEASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
+            fi
+            PACKAGE_VERSION="$BASE_VERSION-$PRE_RELEASE"
+          else
+            PACKAGE_VERSION="$BASE_VERSION"
+          fi
+        fi
+        
         echo "Using versions: $VERSION | $PACKAGE_VERSION | $FILE_VERSION"
+        echo "GitVersion outputs for debugging:"
+        echo "  assemblySemVer: ${{ steps.version.outputs.assemblySemVer }}"
+        echo "  nuGetVersion: ${{ steps.version.outputs.nuGetVersion }}"
+        echo "  fullSemVer: ${{ steps.version.outputs.fullSemVer }}"
+        echo "  semVer: ${{ steps.version.outputs.semVer }}"
         
         dotnet build src/Idevs.Foundation/Idevs.Foundation.csproj \
           --configuration Release \
