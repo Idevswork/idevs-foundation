@@ -131,9 +131,6 @@ public class FoundationModule : global::Autofac.Module
             }
             else
             {
-                // Gets a value indicating whether to register as self (implementation type).
-                // When false (default), registers as implemented interfaces.
-                // If no interfaces are implemented, falls back to AsSelf registration.
                 var interfaces = type.GetInterfaces();
                 registration = interfaces.Any()
                     ? registration.AsImplementedInterfaces()
