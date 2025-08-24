@@ -217,7 +217,7 @@ jobs:
     name: Publish Release Packages  
     runs-on: ubuntu-latest
     needs: [build-and-test, package]
-    if: false  # Disabled - only publish on explicit releases
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment: production
     
     steps:
