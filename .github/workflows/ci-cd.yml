@@ -93,12 +93,35 @@ jobs:
       with:
         versionSpec: '6.x'
     
+    - name: Debug Git State
+      run: |
+        echo "Git branch: ${{ github.ref }}"
+        echo "Git SHA: ${{ github.sha }}"
+        git branch -a
+        git tag --list | head -10
+        echo "Last 5 commits:"
+        git log --oneline -5
+    
     - name: Determine Version
       id: version
       continue-on-error: true
       uses: gittools/actions/gitversion/execute@v4
       with:
         configFilePath: 'GitVersion.yml'
+    
+    - name: Debug GitVersion Output
+      if: always()
+      run: |
+        echo "GitVersion outcome: ${{ steps.version.outcome }}"
+        echo "All GitVersion outputs:"
+        echo "  assemblySemVer: '${{ steps.version.outputs.assemblySemVer }}'"
+        echo "  nuGetVersion: '${{ steps.version.outputs.nuGetVersion }}'"
+        echo "  fullSemVer: '${{ steps.version.outputs.fullSemVer }}'"
+        echo "  semVer: '${{ steps.version.outputs.semVer }}'"
+        echo "  majorMinorPatch: '${{ steps.version.outputs.majorMinorPatch }}'"
+        echo "  assemblySemFileVer: '${{ steps.version.outputs.assemblySemFileVer }}'"
+        echo "  branchName: '${{ steps.version.outputs.branchName }}'"
+        echo "  sha: '${{ steps.version.outputs.sha }}'"
     
     
     - name: Set Fallback Version
@@ -107,18 +130,24 @@ jobs:
       run: |
         echo "GitVersion failed, using fallback versioning"
         BRANCH_NAME=${GITHUB_REF#refs/heads/}
-        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+        BUILD_NUMBER=${GITHUB_RUN_NUMBER:-1}
         SHORT_SHA=${GITHUB_SHA::7}
         
         if [[ "$BRANCH_NAME" == "main" ]]; then
           VERSION="1.0.0"
           PACKAGE_VERSION="1.0.0"
         elif [[ "$BRANCH_NAME" == "develop" ]]; then
-          VERSION="1.0.0-alpha.${TIMESTAMP}"
-          PACKAGE_VERSION="1.0.0-alpha.${TIMESTAMP}"
+          VERSION="1.0.0"
+          PACKAGE_VERSION="1.0.0-alpha.${BUILD_NUMBER}"
+        elif [[ "$BRANCH_NAME" =~ ^release/ ]]; then
+          VERSION="1.0.0"
+          PACKAGE_VERSION="1.0.0-beta.${BUILD_NUMBER}"
+        elif [[ "$BRANCH_NAME" =~ ^rc-sprint/ ]]; then
+          VERSION="1.0.0"
+          PACKAGE_VERSION="1.0.0-rc.${BUILD_NUMBER}"
         else
-          VERSION="1.0.0-beta.${TIMESTAMP}"
-          PACKAGE_VERSION="1.0.0-beta.${TIMESTAMP}"
+          VERSION="1.0.0"
+          PACKAGE_VERSION="1.0.0-alpha.${BUILD_NUMBER}"
         fi
         
         echo "assemblySemVer=$VERSION" >> $GITHUB_OUTPUT
