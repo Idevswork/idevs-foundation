@@ -109,6 +109,7 @@ This creates the following aliases:
 - `git hotfix-start <version>` - Start a hotfix
 - `git hotfix-finish <version>` - Complete a hotfix
 - `git sync` - Sync main and develop branches
+- `git sync-develop` - Sync develop branch with main (after manual changes)
 - `git status-all` - Show comprehensive repository status
 
 ### Development Environment
@@ -528,6 +529,9 @@ git hotfix-finish 1.2.1
 ```bash
 # Sync all branches with remote
 git sync
+
+# Sync develop branch with main (after manual main branch updates)
+git sync-develop
 
 # Show comprehensive status
 git status-all
@@ -1094,6 +1098,38 @@ dotnet test --filter "FullyQualifiedName~YourTestClass.YourTestMethod"
 ```
 
 #### **Version and Release Issues**
+
+**Problem**: "Develop branch shows '1 commit behind main' after release"
+```bash
+# This is normal after merging develop to main
+# The merge commit on main needs to be pulled back to develop
+
+# Solution 1: Use the sync-develop alias (recommended)
+git sync-develop
+
+# Solution 2: Manual sync (equivalent to above)
+git checkout develop
+git pull origin main
+git push origin develop
+
+# Solution 3: If you made other changes to main manually
+# (e.g., documentation updates, hotfixes not through GitFlow)
+git checkout develop
+git pull origin develop  # Get latest develop first
+git merge origin/main     # Merge main changes to develop
+git push origin develop
+
+# Why this happens:
+# When develop merges to main, a merge commit is created on main
+# Develop branch doesn't automatically get this merge commit
+# This is expected GitFlow behavior - main and develop should stay in sync
+
+# Use cases for sync-develop:
+# - After manual releases
+# - After emergency hotfixes applied directly to main
+# - After documentation updates made to main
+# - After any manual changes to main branch
+```
 
 **Problem**: "Wrong version number generated"
 ```bash

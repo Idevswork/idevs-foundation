@@ -1,5 +1,7 @@
 using System.Reflection;
 using Autofac;
+using Autofac.Builder;
+using Idevs.Foundation.Autofac.ComponentModels;
 using Idevs.Foundation.Cqrs.Behaviors;
 using Idevs.Foundation.Cqrs.Commands;
 using Idevs.Foundation.Cqrs.Queries;
@@ -33,7 +35,7 @@ public class FoundationModule : global::Autofac.Module
     /// <param name="assembly">Assembly to scan for handlers and behaviors.</param>
     /// <param name="registerLoggingBehavior">Whether to register the logging behavior.</param>
     public FoundationModule(Assembly assembly, bool registerLoggingBehavior = true)
-        : this(new[] { assembly }, registerLoggingBehavior)
+        : this([assembly], registerLoggingBehavior)
     {
     }
 
@@ -74,6 +76,69 @@ public class FoundationModule : global::Autofac.Module
             builder.RegisterGeneric(typeof(LoggingBehavior<,>))
                 .As(typeof(IPipelineBehavior<,>))
                 .InstancePerLifetimeScope();
+        }
+
+        // Register component models
+        RegisterComponentModels(builder);
+    }
+
+    /// <summary>
+    /// Registers services marked with component model attributes.
+    /// </summary>
+    /// <param name="builder">The container builder.</param>
+    private void RegisterComponentModels(ContainerBuilder builder)
+    {
+        foreach (var assembly in _assemblies)
+        {
+            var types = assembly.GetTypes()
+                .Where(type => type.IsClass && !type.IsAbstract)
+                .ToArray();
+
+            RegisterTypesWithAttribute<SingletonAttribute>(builder, types, lifetime => lifetime.SingleInstance());
+            RegisterTypesWithAttribute<ScopedAttribute>(builder, types,
+                lifetime => lifetime.InstancePerLifetimeScope());
+            RegisterTypesWithAttribute<TransientAttribute>(builder, types,
+                lifetime => lifetime.InstancePerDependency());
+        }
+    }
+
+    /// <summary>
+    /// Registers types marked with a specific component model attribute.
+    /// </summary>
+    /// <typeparam name="TAttribute">The attribute type.</typeparam>
+    /// <param name="builder">The container builder.</param>
+    /// <param name="types">The types to scan.</param>
+    /// <param name="lifetimeAction">The lifetime configuration action.</param>
+    private static void RegisterTypesWithAttribute<TAttribute>(
+        ContainerBuilder builder,
+        Type[] types,
+        Func<IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle>,
+            IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle>> lifetimeAction)
+        where TAttribute : ComponentModelAttribute
+    {
+        var typesWithAttribute = types
+            .Where(type => type.GetCustomAttribute<TAttribute>() != null)
+            .ToArray();
+
+        foreach (var type in typesWithAttribute)
+        {
+            var attribute = type.GetCustomAttribute<TAttribute>()!;
+            var registration = builder.RegisterType(type);
+
+            if (attribute.AsSelf)
+            {
+                registration = registration.AsSelf();
+            }
+            else
+            {
+                var interfaces = type.GetInterfaces();
+                registration = interfaces.Any()
+                    ? registration.AsImplementedInterfaces()
+                    : registration.AsSelf();
+            }
+
+            // Apply lifetime
+            lifetimeAction(registration);
         }
     }
 }
