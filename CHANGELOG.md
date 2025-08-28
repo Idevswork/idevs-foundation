@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
+- Updated GitVersion.MsBuild from 6.0.2 to 6.0.3 to address security vulnerabilities
 
 ## [1.0.0] - 2025-01-22
 
