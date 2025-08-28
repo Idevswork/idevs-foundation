@@ -29,7 +29,7 @@
     <!-- Source Linking -->
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <!-- GitVersion Integration -->
-    <PackageVersion Include="GitVersion.MsBuild" Version="6.0.2" />
+    <PackageVersion Include="GitVersion.MsBuild" Version="6.0.3" />
     <!-- Autofac Packages -->
     <PackageVersion Include="Autofac" Version="8.4.0" />
     <PackageVersion Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />

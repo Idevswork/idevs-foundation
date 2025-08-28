@@ -21,7 +21,7 @@
     
     <!-- Version Information - GitVersion Integration -->
     <!-- When GitVersion is available, it will override these values -->
-    <VersionPrefix Condition="'$(GitVersion_MajorMinorPatch)' == ''">0.2.1</VersionPrefix>
+    <VersionPrefix Condition="'$(GitVersion_MajorMinorPatch)' == ''">0.2.3</VersionPrefix>
     <Version Condition="'$(GitVersion_NuGetVersion)' != ''">$(GitVersion_NuGetVersion)</Version>
     <AssemblyVersion Condition="'$(GitVersion_AssemblySemVer)' != ''">$(GitVersion_AssemblySemVer)</AssemblyVersion>
     <FileVersion Condition="'$(GitVersion_AssemblySemFileVer)' != ''">$(GitVersion_AssemblySemFileVer)</FileVersion>
