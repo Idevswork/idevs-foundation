@@ -6,7 +6,7 @@ namespace Idevs.Foundation.EntityFramework.Entities;
 /// Base class for entities with an identifier.
 /// </summary>
 /// <typeparam name="TId">The type of the identifier.</typeparam>
-public abstract class Entity<TId> : IHasId<TId>, IEquatable<Entity<TId>>
+public abstract class EntityBase<TId> : IHasId<TId>, IEquatable<EntityBase<TId>>
     where TId : notnull
 {
     /// <summary>
@@ -14,7 +14,7 @@ public abstract class Entity<TId> : IHasId<TId>, IEquatable<Entity<TId>>
     /// </summary>
     public virtual TId Id { get; init; } = default!;
 
-    public bool Equals(Entity<TId>? other)
+    public bool Equals(EntityBase<TId>? other)
     {
         if (other is null) return false;
         return ReferenceEquals(this, other) || EqualityComparer<TId>.Default.Equals(Id, other.Id);
@@ -25,7 +25,7 @@ public abstract class Entity<TId> : IHasId<TId>, IEquatable<Entity<TId>>
         if (obj is null) return false;
         if (ReferenceEquals(this, obj)) return true;
         return obj.GetType() == GetType() &&
-               obj is Entity<TId> other &&
+               obj is EntityBase<TId> other &&
                EqualityComparer<TId>.Default.Equals(Id, other.Id);
     }
 
@@ -34,12 +34,12 @@ public abstract class Entity<TId> : IHasId<TId>, IEquatable<Entity<TId>>
         return EqualityComparer<TId>.Default.GetHashCode(Id);
     }
 
-    public static bool operator ==(Entity<TId>? left, Entity<TId>? right)
+    public static bool operator ==(EntityBase<TId>? left, EntityBase<TId>? right)
     {
         return Equals(left, right);
     }
 
-    public static bool operator !=(Entity<TId>? left, Entity<TId>? right)
+    public static bool operator !=(EntityBase<TId>? left, EntityBase<TId>? right)
     {
         return !Equals(left, right);
     }
