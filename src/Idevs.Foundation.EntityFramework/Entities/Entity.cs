@@ -12,13 +12,12 @@ public abstract class Entity<TId> : IHasId<TId>, IEquatable<Entity<TId>>
     /// <summary>
     /// Gets or sets the unique identifier for the entity.
     /// </summary>
-    public virtual TId Id { get; set; } = default!;
+    public virtual TId Id { get; init; } = default!;
 
     public bool Equals(Entity<TId>? other)
     {
         if (other is null) return false;
-        if (ReferenceEquals(this, other)) return true;
-        return EqualityComparer<TId>.Default.Equals(Id, other.Id);
+        return ReferenceEquals(this, other) || EqualityComparer<TId>.Default.Equals(Id, other.Id);
     }
 
     public override bool Equals(object? obj)
