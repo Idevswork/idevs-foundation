@@ -34,7 +34,7 @@ gh pr create --base develop --title "feat: add new feature"  # Create PR
 
 | Branch | Purpose | Deployment | Protection |
 |--------|---------|------------|------------|
-| `main` | Production-ready code | Stable NuGet packages | Protected, no direct commits |
+| `main` | Production-ready code | **Tag-based publishing only** | Protected, no direct commits |
 | `develop` | Integration branch | Preview packages (-alpha) | Protected, accepts feature PRs |
 
 ### Supporting Branches (Temporary)
@@ -220,7 +220,7 @@ git release-finish 1.3.0
 # - Pushes everything
 ```
 
-#### 6. Create GitHub Release
+#### 6. Create GitHub Release & Publish Packages
 
 ```bash
 # Create GitHub release with auto-generated notes
@@ -228,11 +228,18 @@ gh release create v1.3.0 \
   --title "Idevs.Foundation v1.3.0" \
   --generate-notes
 
-# Or create draft for review first
+# Or create draft for review first  
 gh release create v1.3.0 \
   --title "Idevs.Foundation v1.3.0" \
   --generate-notes \
   --draft
+
+# IMPORTANT: Publishing NuGet packages
+# Packages are ONLY published when you create a version tag (v1.3.0)
+# The GitHub Action will automatically:
+# 1. Build packages with the tag version
+# 2. Publish to NuGet.org
+# 3. Publish to GitHub Packages
 ```
 
 ## Hotfixes
@@ -280,16 +287,21 @@ dotnet test --configuration Release
 # Regression testing
 ```
 
-#### 4. Complete Hotfix
+#### 4. Complete Hotfix & Publish
 
 ```bash
 # Finish hotfix (merges to main and develop, creates tag)
 git hotfix-finish 1.2.1
 
-# Create GitHub release for hotfix
+# Create GitHub release for hotfix (triggers package publishing)
 gh release create v1.2.1 \
   --title "Hotfix v1.2.1" \
   --notes "Critical bugfix for authentication issue"
+
+# Note: Creating the tag v1.2.1 automatically triggers:
+# - Package build with hotfix version
+# - Publishing to NuGet.org  
+# - Publishing to GitHub Packages
 ```
 
 ## Commands Reference
@@ -385,6 +397,56 @@ gh release create v1.2.0 --generate-notes
 gh release create v1.2.0 --draft --generate-notes
 gh release list
 gh release view v1.2.0
+```
+
+## Package Publishing Strategy
+
+### Tag-Based Publishing (Current Strategy)
+
+**✅ Production packages are ONLY published when version tags are created:**
+
+```bash
+# This WILL trigger package publishing
+git tag v1.3.0
+git push origin v1.3.0
+# OR
+gh release create v1.3.0 --generate-notes
+
+# This will NOT trigger package publishing  
+git push origin main  # Only runs CI/CD, no publishing
+```
+
+**Publishing triggers:**
+- ✅ Tags matching `v*` pattern (v1.0.0, v1.2.3, etc.)
+- ✅ GitHub releases (which create tags)
+- ❌ Direct pushes to main branch
+- ❌ Pull request merges
+
+**Package versions:**
+- **main + tag**: Stable version (1.3.0)
+- **develop**: Preview version (1.3.0-alpha.123)
+
+### Alternative Publishing Strategies
+
+If you need different publishing behavior, modify `.github/workflows/ci-cd.yml`:
+
+#### Option 1: Manual Approval (Environment Protection)
+```yaml
+# Requires manual approval in GitHub environments
+if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+environment: production  # Configure with required reviewers
+```
+
+#### Option 2: Commit Message Control
+```yaml
+# Only publish when commit contains [release]
+if: github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[release]')
+```
+
+#### Option 3: Release Branch Only
+```yaml
+# Only publish from release branches  
+if: startsWith(github.ref, 'refs/heads/release/')
 ```
 
 ## Best Practices
@@ -622,8 +684,14 @@ dotnet build --configuration Release
 dotnet test --configuration Release
 git release-finish 1.3.0
 
-# Create GitHub release
+# Create GitHub release (triggers package publishing)
 gh release create v1.3.0 --generate-notes
+
+# The tag creation will automatically trigger:
+# 1. CI/CD build with release version
+# 2. Package generation 
+# 3. Publishing to NuGet.org
+# 4. Publishing to GitHub Packages
 ```
 
 ---
