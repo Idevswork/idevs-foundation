@@ -6,7 +6,7 @@ namespace Idevs.Foundation.EntityFramework.Entities;
 /// Base class for entities with an identifier.
 /// </summary>
 /// <typeparam name="TId">The type of the identifier.</typeparam>
-public abstract class Entity<TId> : IHasId<TId>, IEquatable<TId>
+public abstract class Entity<TId> : IHasId<TId>, IEquatable<Entity<TId>>
     where TId : notnull
 {
     /// <summary>
@@ -14,9 +14,11 @@ public abstract class Entity<TId> : IHasId<TId>, IEquatable<TId>
     /// </summary>
     public virtual TId Id { get; set; } = default!;
 
-    public bool Equals(TId? other)
+    public bool Equals(Entity<TId>? other)
     {
-        return EqualityComparer<TId>.Default.Equals(Id, other);
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return EqualityComparer<TId>.Default.Equals(Id, other.Id);
     }
 
     public override bool Equals(object? obj)
