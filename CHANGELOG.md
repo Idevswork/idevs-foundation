@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.5] - 2025-01-XX
+
+### Fixed
+- Fixed infinite recursion in `Entity<TId>.Equals(Entity<TId>? other)` method
+- Corrected equality comparison to use `EqualityComparer<TId>` instead of `EqualityComparer<Entity<TId>>`
+- Improved entity equality logic to properly compare ID properties only
+
+### Changed
+- Enhanced entity equality implementation for better performance and correctness
+
+## [0.2.4] - Previous Release
+
 ### Added
 - **LogManager functionality** for easy logger access throughout applications
   - `ILogManager` interface for centralized logger creation
@@ -33,8 +45,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 - Updated GitVersion.MsBuild from 6.0.2 to 6.0.3 to address security vulnerabilities
-
-## [1.0.0] - 2025-01-22
 
 ### Added
 - **Core Foundation Framework Components:**
