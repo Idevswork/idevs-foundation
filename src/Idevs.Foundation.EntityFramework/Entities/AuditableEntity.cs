@@ -6,7 +6,7 @@ namespace Idevs.Foundation.EntityFramework.Entities;
 /// Base class for entities that support audit trail (creation and update tracking).
 /// </summary>
 /// <typeparam name="TId">The type of the identifier.</typeparam>
-public abstract class AuditableEntity<TId> : Entity<TId>, IHasCreatedLog, IHasUpdatedLog
+public abstract class AuditableEntity<TId> : EntityBase<TId>, IHasCreatedLog, IHasUpdatedLog
     where TId : notnull
 {
     /// <summary>
