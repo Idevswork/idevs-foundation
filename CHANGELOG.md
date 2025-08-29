@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.8] - 2025-01-30
+
+### Fixed
+- Fixed infinite recursion in `Entity<TId>.Equals(Entity<TId>? other)` method
+- Corrected equality comparison to use `EqualityComparer<TId>` instead of `EqualityComparer<Entity<TId>>`
+- Improved entity equality logic to properly compare ID properties only
+
+### Changed
+- Enhanced entity equality implementation for better performance and correctness
+
 ## [0.2.6] - 2025-08-29
 
 ### Fixed
