@@ -7,6 +7,7 @@ namespace Idevs.Foundation.EntityFramework.Entities;
 /// </summary>
 /// <typeparam name="TId">The type of the identifier.</typeparam>
 public abstract class SoftDeletableEntity<TId> : AuditableEntity<TId>, IHasDeletedLog
+    where TId : notnull
 {
     /// <summary>
     /// Gets or sets the timestamp when the entity was deleted.
