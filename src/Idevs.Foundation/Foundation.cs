@@ -1,5 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Idevs.Foundation;
 
 /// <summary>
@@ -21,14 +19,15 @@ public static class Foundation
     /// <summary>
     /// Gets the list of included components.
     /// </summary>
-    public static string[] Components => new[]
-    {
+    public static string[] Components =>
+    [
         "Idevs.Foundation.Abstractions",
         "Idevs.Foundation.Services", 
         "Idevs.Foundation.Mediator",
         "Idevs.Foundation.Cqrs",
         "Idevs.Foundation.EntityFramework",
         "Idevs.Foundation.Serilog",
-        "Idevs.Foundation.Autofac"
-    };
+        "Idevs.Foundation.Autofac",
+        "Idevs.Foundation.AspNetCore"
+    ];
 }
