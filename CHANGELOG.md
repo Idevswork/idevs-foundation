@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.8] - 2025-01-30
+## [0.2.9] - 2025-08-30
+
+## Added
+- Added `IBaseMapper` interface for mapping entities and DTOs
+- Added `IdevController` base controller for API controllers
+
+## [0.2.8] - 2025-08-30
 
 ### Fixed
 - Fixed infinite recursion in `Entity<TId>.Equals(Entity<TId>? other)` method
