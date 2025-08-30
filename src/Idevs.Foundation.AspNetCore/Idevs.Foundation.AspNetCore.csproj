@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+      <PackageId>Idevs.Foundation.AspNetCore</PackageId>
+      <Title>Idevs Foundation AspNetCore</Title>
+      <Description>ASP.NET Core integration helpers and base controller types.</Description>
+      <PackageTags>aspnetcore;controllers;foundation</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" />
+    <PackageReference Include="System.Text.RegularExpressions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Idevs.Foundation.Services\Idevs.Foundation.Services.csproj" />
+  </ItemGroup>
+
+</Project>
