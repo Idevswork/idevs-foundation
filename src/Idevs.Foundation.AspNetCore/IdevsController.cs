@@ -50,7 +50,15 @@ public abstract class IdevsController<TController>(ILogger<TController>? logger 
         if (!IsSupportedTenant) return default;
         if (string.IsNullOrWhiteSpace(TenantColumnName)) return default;
         var tenantIdClaim = User.FindFirst(TenantColumnName);
-        return tenantIdClaim != null ? (TId?)Convert.ChangeType(tenantIdClaim.Value, typeof(TId)) : default;
+        if (tenantIdClaim == null) return default;
+        try
+        {
+            return (TId)Convert.ChangeType(tenantIdClaim.Value, typeof(TId));
+        }
+        catch
+        {
+            return default;
+        }
     }
 
     /// <summary>
@@ -68,10 +76,32 @@ public abstract class IdevsController<TController>(ILogger<TController>? logger 
     /// <summary>
     /// Gets the client IP address from the request.
     /// </summary>
-    protected virtual string? ClientIpAddress =>
-        HttpContext.Connection.RemoteIpAddress?.ToString() ??
-        Request.Headers["X-Forwarded-For"].FirstOrDefault() ??
-        Request.Headers["X-Real-IP"].FirstOrDefault();
+    protected virtual string? ClientIpAddress
+    {
+        get
+        {
+            // Always prefer RemoteIpAddress
+            var remoteIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+            if (!string.IsNullOrWhiteSpace(remoteIpAddress))
+                return remoteIpAddress;
+
+            // TODO: Check if the request is from a trusted proxy before trusting headers
+            // For demonstration, we always parse X-Forwarded-For, but in production,
+            // only do this if behind a trusted proxy.
+            var xForwardedFor = Request.Headers["X-Forwarded-For"].FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(xForwardedFor))
+            {
+                // X-Forwarded-For can be a comma-separated list; take the first one.
+                var ipAddresses = xForwardedFor.Split(',');
+                var firstIpAddress = ipAddresses.FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(firstIpAddress))
+                    return firstIpAddress;
+            }
+
+            var xRealIp = Request.Headers["X-Real-IP"].FirstOrDefault();
+            return !string.IsNullOrWhiteSpace(xRealIp) ? xRealIp : null;
+        }
+    }
 
     #endregion
 
