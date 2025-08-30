@@ -203,11 +203,7 @@ public abstract class IdevsController<TController>(ILogger<TController>? logger 
     /// <returns>Unauthorized response if is not authenticated, null if authenticated.</returns>
     protected IActionResult? RequireAuthentication()
     {
-        // if (CurrentUserId == null)
-        // {
-        //     return Unauthorized(new { message = "Authentication required" });
-        // }
-        return null;
+        return User?.Identity is not { IsAuthenticated: true } ? Unauthorized() : null;
     }
 
     /// <summary>
